@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.BossLuckMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.BossLuck">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="score_id" jdbcType="BIGINT" property="score_id" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="times" jdbcType="INTEGER" property="times" />
+  </resultMap>
+
+    <select id="queryBossLuckList" resultType="map">
+        SELECT
+            dbl.`id`, dbl.`score_id`, dbl.`score`, dbl.`times`
+        FROM `darts_boss_luck` as dbl
+        WHERE 1=1
+            AND dbl.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dbl.${orderSql}
+        </if>
+    </select>
+</mapper>

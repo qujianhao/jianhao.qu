@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.MedalMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Medal">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="medal_style" jdbcType="TINYINT" property="medal_style" />
+    <result column="medal_style_name" jdbcType="VARCHAR" property="medal_style_name" />
+    <result column="medal_name" jdbcType="VARCHAR" property="medal_name" />
+    <result column="medal_desc" jdbcType="VARCHAR" property="medal_desc" />
+    <result column="prize_point" jdbcType="INTEGER" property="prize_point" />
+    <result column="complete_times" jdbcType="INTEGER" property="complete_times" />
+    <result column="win_times" jdbcType="INTEGER" property="win_times" />
+    <result column="hit_times" jdbcType="INTEGER" property="hit_times" />
+    <result column="rule_function" jdbcType="VARCHAR" property="rule_function" />
+    <result column="is_valid" jdbcType="TINYINT" property="is_valid" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+    <result column="order_no" jdbcType="INTEGER" property="order_no" />
+    <result column="medal_url" jdbcType="VARCHAR" property="medal_url" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="sql_str" jdbcType="LONGVARCHAR" property="sql_str" />
+  </resultMap>
+
+  <select id="queryMedalList" resultType="map">
+       SELECT
+           dm.`id`, dm.`medal_style`, dm.`medal_style_name`, dm.`medal_name`, dm.`medal_desc`, dm.`prize_point`, dm.`complete_times`, dm.`win_times`, dm.`hit_times`, dm.`rule_function`, dm.`is_valid`, 
+           dm.`is_delete`, dm.`order_no`, dm.`medal_url`, dm.`create_time`,dm.`update_time` 
+       FROM `darts_medal` as dm
+       WHERE 1=1
+           <if test="medal_style != null and medal_style != ''">
+               AND dm.medal_style like concat('%', #{medal_style}, '%')
+           </if>
+           <if test="medal_style_name != null and medal_style_name != ''">
+               AND dm.medal_style_name like concat('%', #{medal_style_name}, '%')
+           </if>
+           <if test="medal_name != null and medal_name != ''">
+               AND dm.medal_name like concat('%', #{medal_name}, '%')
+           </if>
+           <if test="is_valid != null">
+               AND dm.is_valid = #{is_valid}
+           </if>
+           AND dm.is_delete = 0
+       <if test="orderSql != null and orderSql != ''">
+           ORDER BY dm.${orderSql}
+       </if>
+   </select>
+   
+   <select id="selectMedalTerm" resultType="map">
+        ${sqlStr}
+   </select>
+    
+</mapper>

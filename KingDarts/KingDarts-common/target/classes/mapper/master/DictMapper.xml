@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.DictMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Dict">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="module_key" jdbcType="VARCHAR" property="module_key" />
+    <result column="group_key" jdbcType="VARCHAR" property="group_key" />
+    <result column="dict_key" jdbcType="VARCHAR" property="dict_key" />
+    <result column="dict_value" jdbcType="VARCHAR" property="dict_value" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+  </resultMap>
+
+    <select id="queryDictList" resultType="map">
+        SELECT
+             dict_key, dict_value
+        FROM wt_dict 
+        <where>
+        	<if test="module_key != null ">and module_key = #{module_key} </if>
+        	<if test="group_key != null ">and group_key = #{group_key} </if>
+        	AND is_delete = 0
+        </where>
+            
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY ${orderSql}
+        </if>
+    </select>
+</mapper>

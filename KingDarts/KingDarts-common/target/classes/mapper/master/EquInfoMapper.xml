@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.EquInfoMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.EquInfo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="equno" jdbcType="VARCHAR" property="equno" />
+    <result column="equname" jdbcType="VARCHAR" property="equname" />
+    <result column="models" jdbcType="VARCHAR" property="models" />
+    <result column="equ_status" jdbcType="BIT" property="equ_status" />
+    <result column="isowed" jdbcType="BIT" property="isowed" />
+    <result column="supp_id" jdbcType="VARCHAR" property="supp_id" />
+    <result column="oper_modal" jdbcType="BIT" property="oper_modal" />
+    <result column="dispo_amount" jdbcType="DECIMAL" property="dispo_amount" />
+    <result column="modi_time" jdbcType="TIMESTAMP" property="modi_time" />
+    <result column="prop_own" jdbcType="VARCHAR" property="prop_own" />
+    <result column="use_own" jdbcType="VARCHAR" property="use_own" />
+    <result column="input_time" jdbcType="TIMESTAMP" property="input_time" />
+    <result column="use_time" jdbcType="TIMESTAMP" property="use_time" />
+    <result column="due_time" jdbcType="TIMESTAMP" property="due_time" />
+    <result column="last_online" jdbcType="TIMESTAMP" property="last_online" />
+    <result column="equ_version" jdbcType="VARCHAR" property="equ_version" />
+    <result column="cur_version" jdbcType="VARCHAR" property="cur_version" />
+    <result column="isallow" jdbcType="BIT" property="isallow" />
+    <result column="isline" jdbcType="BIT" property="isline" />
+    <result column="prod_batch" jdbcType="VARCHAR" property="prod_batch" />
+    <result column="sys_reg_no" jdbcType="VARCHAR" property="sys_reg_no" />
+    <result column="line_days" jdbcType="INTEGER" property="line_days" />
+    <result column="online_times" jdbcType="INTEGER" property="online_times" />
+    <result column="cur_addr_id" jdbcType="VARCHAR" property="cur_addr_id" />
+    <result column="produ_addr" jdbcType="VARCHAR" property="produ_addr" />
+    <result column="isvalid" jdbcType="BIT" property="isvalid" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="booked_user" jdbcType="VARCHAR" property="booked_user" />
+    <result column="isactivation" jdbcType="BIT" property="isactivation" />
+    <result column="game_price" jdbcType="DECIMAL" property="game_price" />
+  </resultMap>
+
+    <select id="queryEquInfoList" resultType="map">
+        SELECT
+            dei.*
+        FROM darts_equ_info as dei
+        <where>
+        	<if test="equname != null and equname != ''">
+                AND dei.equname like concat('%', #{equname}, '%')
+            </if>
+            <if test="equ_status != null and equ_status != ''"> AND dei.equ_status = #{equ_status} </if>
+            <if test="equno != null and equno != ''"> AND dei.equno like concat('%', #{equno}, '%') </if>
+            AND dei.isvalid=1
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY ${orderSql}
+        </if>
+    </select>
+    
+    
+    <select id="queryEquOnlieList" resultType="map">
+   	<if test="diftime != null"> select * from ( </if>
+       select ei.*,case when ei.last_online is null  then 0 ELSE hour(timediff(NOW(),ei.last_online)) END diftime ,ci.cname,ci.captain,ci.mobile
+		from darts_equ_info ei INNER JOIN darts_equ_auth ea ON ei.equno = ea.equno 
+		INNER JOIN darts_club_info ci ON ea.auth_no = ci.cno and ea.merchant = 1
+        <where>
+        	<if test="equname != null and equname != ''"> AND ei.equname like concat('%', #{equname}, '%') </if>
+        	<if test="equno != null and equno != ''"> AND ei.equno like concat('%', #{equno}, '%') </if>
+        	<if test="isvalid != null"> AND ei.isvalid = #{isvalid} </if>
+        	<if test="isline != null"> AND ei.isline = #{isline} </if>
+        	<if test="equ_status != null and equ_status != ''"> AND ei.equ_status = #{equ_status} </if>
+        	AND ei.isvalid=1
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dei.${orderSql}
+        </if>
+     <if test="diftime != null"> ) a where diftime &gt; #{diftime} </if>
+    </select>
+    
+     <select id="queryEquList" resultType="map">
+        SELECT dei.equno , dci.cname
+        FROM darts_equ_info as dei INNER JOIN darts_equ_auth dea ON dei.equno = dea.equno
+		INNER JOIN darts_club_info dci ON dci.cno = dea.auth_no
+        <where>
+        	<if test="equname != null and equname != ''">
+                AND dei.equname like concat('%', #{equname}, '%')
+            </if>
+            <if test="equ_status != null and equ_status != ''"> AND dei.equ_status = #{equ_status} </if>
+            <if test="equno != null and equno != ''"> AND dei.equno = #{equno} </if>
+            <if test="booked_user != null and booked_user != ''"> AND dei.booked_user = #{booked_user} </if>
+            AND dei.isvalid=1
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dei.${orderSql}
+        </if>
+    </select>
+    
+     <select id="queryEquStatistics" resultType="map">
+        select dea.equno, dci.cname ,dai.agname, r.ramount ,c.camount
+		from darts_equ_auth dea INNER JOIN darts_club_info dci ON  dea.auth_no = dci.cno
+		LEFT JOIN darts_agent_info dai ON dai.agno = dci.agno
+		LEFT JOIN (
+			select sum(amount) ramount ,equno from darts_commission 
+			<where>
+	            <if test="time_start != null and time_start != ''">
+	                AND pay_time &gt;= #{time_start}
+	            </if>
+	            <if test="time_end != null and time_end != ''">
+	                AND pay_time &lt;= #{time_end}
+	            </if>
+			</where>
+			group by equno
+		) r ON r.equno = dea.equno
+		LEFT JOIN (
+			select sum(amount) camount,equno
+			from darts_user_balance 
+			where type = 2 and equno is not null
+				<if test="time_start != null and time_start != ''">
+	                AND log_time &gt;= #{time_start}
+	            </if>
+	            <if test="time_end != null and time_end != ''">
+	                AND log_time &lt;= #{time_end}
+	            </if>
+			group by equno
+		) c ON c.equno = dea.equno
+        <where>
+            <if test="equno != null and equno != ''"> AND dea.equno like concat('%', #{equno}, '%') </if>
+            <if test="agno != null and agno != ''"> AND dai.agno like concat('%', #{agno}, '%') </if>
+            <if test="cname != null and cname != ''"> AND dci.cname like concat('%', #{cname}, '%') </if>
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dei.${orderSql}
+        </if>
+    </select>
+    
+</mapper>

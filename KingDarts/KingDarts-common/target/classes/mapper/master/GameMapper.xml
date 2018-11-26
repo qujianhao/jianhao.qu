@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.GameMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Game">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="game_code" jdbcType="VARCHAR" property="game_code" />
+    <result column="game_name" jdbcType="VARCHAR" property="game_name" />
+    <result column="game_type" jdbcType="INTEGER" property="game_type" />
+    <result column="game_mode_code" jdbcType="VARCHAR" property="game_mode_code" />
+    <result column="dedcount" jdbcType="DECIMAL" property="dedcount" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="create_date" />
+    <result column="create_by" jdbcType="VARCHAR" property="create_by" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="update_date" />
+    <result column="update_by" jdbcType="VARCHAR" property="update_by" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+
+    <select id="queryGameList" resultType="map">
+        SELECT
+            dg.`id`, dg.`game_code`, dg.`game_name`, dg.`game_type`, dg.`game_mode_code`, dg.`dedcount`, dg.`create_date`, dg.`create_by`, dg.`update_date`, dg.`update_by`, dg.`status`
+        FROM `darts_game` as dg
+        WHERE 1=1
+            <if test="game_name != null and game_name != ''">
+                AND dg.game_name like concat('%', #{game_name}, '%')
+            </if>
+            AND dg.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dg.${orderSql}
+        </if>
+    </select>
+</mapper>

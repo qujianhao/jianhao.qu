@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.UserOpenidMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.UserOpenid">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+  </resultMap>
+  
+   <resultMap id="VoResultMap" type="com.wangtiansoft.KingDarts.results.core.UserOpenidResult">
+   	<id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+   </resultMap>
+
+    <select id="queryUserOpenidList" resultType="map">
+        SELECT
+            wuo.*
+        FROM `wt_user_openid` as wuo
+        <where>
+        	<if test="userId != null" > and wuo.user_id = #{userId}</if>
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY wuo.${orderSql}
+        </if>
+    </select>
+    
+    <select id="selectUserOpenidList" resultMap="VoResultMap">
+        SELECT
+            wuo.*
+        FROM `wt_user_openid` as wuo
+        <where>
+        	<if test="userId != null" > and wuo.user_id = #{userId}</if>
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY wuo.${orderSql}
+        </if>
+    </select>
+</mapper>

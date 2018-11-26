@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.FuncatchPrizeMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.FuncatchPrize">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="prize_id" jdbcType="INTEGER" property="prize_id" />
+    <result column="position_num" jdbcType="TINYINT" property="position_num" />
+    <result column="prize_name" jdbcType="VARCHAR" property="prize_name" />
+    <result column="icon_name" jdbcType="VARCHAR" property="icon_name" />
+    <result column="icon_url" jdbcType="VARCHAR" property="icon_url" />
+    <result column="is_physical" jdbcType="VARCHAR" property="is_physical" />
+    <result column="worth" jdbcType="DECIMAL" property="worth" />
+    <result column="win_rate" jdbcType="DECIMAL" property="win_rate" />
+    <result column="stock" jdbcType="INTEGER" property="stock" />
+    <result column="is_valid" jdbcType="TINYINT" property="is_valid" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+  </resultMap>
+
+    <select id="queryFuncatchPrizeList" resultType="map">
+        SELECT
+            dfp.`prize_id`,dfp.`position_num`,dfp.`prize_name`,dfp.`icon_name`,dfp.`icon_url`, dfp.`is_physical`, dfp.`worth`, dfp.`win_rate`, dfp.`stock`, 
+            dfp.`is_valid`, dfp.`is_delete`, dfp.`create_time`,dfp.`update_time`   
+        FROM `darts_funcatch_prize` as dfp
+        WHERE 1=1
+            <if test="is_physical != null and is_physical != ''">
+                AND dfp.is_physical = #{is_physical}
+            </if>
+            <if test="prize_name != null and prize_name != ''">
+                AND dfp.prize_name like concat('%', #{prize_name}, '%')
+            </if>
+            <if test="is_physical != null  and is_physical !=''">
+                AND dfp.is_physical = #{is_physical}
+            </if>
+            <if test="is_valid != null and is_valid !=''">
+                AND dfp.is_valid = #{is_valid}
+            </if>
+            <if test="position_num != null and position_num !=''">
+                AND dfp.position_num = #{position_num}
+            </if>
+            AND dfp.is_delete = 0
+	        <if test="orderSql != null and orderSql != ''">
+	            ORDER BY dfp.${orderSql}
+	        </if>
+    </select>
+    
+    <select id="countWinRateFuncatchPrizeList" resultType="Integer">
+        SELECT
+            sum(dfp.`win_rate`)   
+        FROM `darts_funcatch_prize` as dfp
+        WHERE 1=1
+    </select>
+</mapper>

@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=d:/liantuo-ebill-front-client.jar -DgroupId=liantuoEbillFrontClient -DartifactId=ebillFrontClient -Dversion=1.0 -Dpackaging=jar

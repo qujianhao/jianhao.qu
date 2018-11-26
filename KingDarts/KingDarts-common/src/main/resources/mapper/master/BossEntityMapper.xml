@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.BossEntityMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.BossEntity">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="boss_id" jdbcType="INTEGER" property="boss_id" />
+    <result column="application_time" jdbcType="VARCHAR" property="application_time" />
+    <result column="evolume" jdbcType="BIGINT" property="evolume" />
+    <result column="kill_status" jdbcType="TINYINT" property="kill_status" />
+    <result column="kill_user_id" jdbcType="VARCHAR" property="kill_user_id" />
+    <result column="kill_time" jdbcType="TIMESTAMP" property="kill_time" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+  </resultMap>
+
+    <select id="queryBossEntityList" resultType="map">
+         SELECT
+            bo.bno,bo.bname,bo.bvolume, dbe.`uuid`, dbe.`boss_id`, dbe.`application_time`, dbe.`evolume`, dbe.`kill_status`, dbe.`kill_user_id`, dbe.`kill_time`, dbe.`create_time`, dbe.`update_time`, dbe.`is_delete`
+        FROM `darts_boss_entity` as dbe left join darts_boss as bo on bo.id=dbe.boss_id 
+        WHERE 1=1 
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dbe.update_time >= #{update_time_start}
+            </if>
+            <if test="boss_id != null and boss_id != ''">
+                AND dbe.boss_id  = #{boss_id}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dbe.#{update_time_end} >= update_time
+            </if>
+            AND dbe.is_delete = 0
+            <if test="orderSql != null and orderSql != ''">
+	            ORDER BY dbe.${orderSql}
+	        </if>
+    </select>
+  
+    <select id="queryBossEntityInfo" resultType="map">
+        SELECT
+            dbe.`uuid`, dbe.`boss_id`,db.`bno`, db.`bname`,db.`bvolume`,dbe.`application_time`, dbe.`evolume`, dbe.`kill_status`, dbe.`kill_user_id`, dbe.`kill_time`, dbe.`create_time`, dbe.`update_time`, dbe.`is_delete`
+        	, dbe.evolume/db.bvolume lifeRate
+        FROM `darts_boss_entity` as dbe left join darts_boss as db on db.id=dbe.boss_id 
+        WHERE 1=1
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dbe.update_time >= #{update_time_start}
+            </if>
+            <if test="boss_id != null and boss_id != ''">
+                AND dbe.boss_id  = #{boss_id}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dbe.#{update_time_end} >= update_time
+            </if>
+            <if test="application_time != null and application_time != ''">
+                AND dbe.application_time = #{application_time}
+            </if>
+            AND dbe.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dbe.${orderSql}
+        </if>
+    </select>
+    
+    <update id="lossLife">
+    	update darts_boss_entity 
+    	<set>
+    		evolume = evolume - #{evolume} 
+    	<if test="kill_status != null ">, kill_status = #{kill_status}</if>
+    	<if test="kill_user_id != null ">, kill_user_id = #{kill_user_id}</if>
+    	<if test="kill_time != null ">, kill_time = #{kill_time}</if>
+    	<if test="update_time != null ">, update_time = #{update_time}</if>
+    	</set> 
+    	<where> 
+    		uuid = #{uuid} 
+    	</where>
+    </update>
+    
+</mapper>

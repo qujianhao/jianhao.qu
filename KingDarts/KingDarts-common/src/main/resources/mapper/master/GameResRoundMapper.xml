@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.GameResRoundMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.GameResRound">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="res_player_id" jdbcType="BIGINT" property="res_player_id" />
+    <result column="hit_num" jdbcType="INTEGER" property="hit_num" />
+    <result column="round_score" jdbcType="INTEGER" property="round_score" />
+  </resultMap>
+
+    <select id="queryGameResRoundList" resultType="map">
+        SELECT
+            dgrr.`id`, dgrr.`res_player_id`, dgrr.`hit_num`, dgrr.`round_score`
+        FROM `darts_game_res_round` as dgrr
+        WHERE 1=1
+            AND dgrr.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dgrr.${orderSql}
+        </if>
+    </select>
+</mapper>

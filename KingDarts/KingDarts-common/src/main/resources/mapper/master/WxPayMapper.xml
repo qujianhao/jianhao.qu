@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.WxPayMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.WxPay">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="appid" jdbcType="VARCHAR" property="appid" />
+    <result column="mch_id" jdbcType="VARCHAR" property="mch_id" />
+    <result column="device_info" jdbcType="VARCHAR" property="device_info" />
+    <result column="nonce_str" jdbcType="VARCHAR" property="nonce_str" />
+    <result column="body" jdbcType="VARCHAR" property="body" />
+    <result column="detail" jdbcType="VARCHAR" property="detail" />
+    <result column="attach" jdbcType="VARCHAR" property="attach" />
+    <result column="out_trade_no" jdbcType="VARCHAR" property="out_trade_no" />
+    <result column="fee_type" jdbcType="VARCHAR" property="fee_type" />
+    <result column="total_fee" jdbcType="BIGINT" property="total_fee" />
+    <result column="spbill_create_ip" jdbcType="VARCHAR" property="spbill_create_ip" />
+    <result column="time_start" jdbcType="VARCHAR" property="time_start" />
+    <result column="time_expire" jdbcType="VARCHAR" property="time_expire" />
+    <result column="goods_tag" jdbcType="VARCHAR" property="goods_tag" />
+    <result column="trade_type" jdbcType="VARCHAR" property="trade_type" />
+    <result column="limit_pay" jdbcType="VARCHAR" property="limit_pay" />
+    <result column="sign" jdbcType="VARCHAR" property="sign" />
+    <result column="return_code" jdbcType="VARCHAR" property="return_code" />
+    <result column="return_msg" jdbcType="VARCHAR" property="return_msg" />
+    <result column="result_code" jdbcType="VARCHAR" property="result_code" />
+    <result column="err_code" jdbcType="VARCHAR" property="err_code" />
+    <result column="err_code_des" jdbcType="VARCHAR" property="err_code_des" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="is_subscribe" jdbcType="VARCHAR" property="is_subscribe" />
+    <result column="return_sign" jdbcType="VARCHAR" property="return_sign" />
+    <result column="transaction_id" jdbcType="VARCHAR" property="transaction_id" />
+    <result column="time_end" jdbcType="VARCHAR" property="time_end" />
+    <result column="out_refund_no" jdbcType="VARCHAR" property="out_refund_no" />
+    <result column="refund_fee" jdbcType="BIGINT" property="refund_fee" />
+    <result column="op_user_id" jdbcType="VARCHAR" property="op_user_id" />
+    <result column="refund_id" jdbcType="VARCHAR" property="refund_id" />
+    <result column="pay_status" jdbcType="BIT" property="pay_status" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+    <result column="isvalid" jdbcType="BIT" property="isvalid" />
+    <result column="cardno" jdbcType="VARCHAR" property="cardno" />
+  </resultMap>
+
+    <select id="queryWxPayList" resultType="map">
+        SELECT
+            dwp.`id`, dwp.`appid`, dwp.`mch_id`, dwp.`device_info`, dwp.`nonce_str`, dwp.`body`, dwp.`detail`, dwp.`attach`, dwp.`out_trade_no`, dwp.`fee_type`, dwp.`total_fee`, dwp.`spbill_create_ip`, dwp.`time_start`, dwp.`time_expire`, dwp.`goods_tag`, dwp.`trade_type`, dwp.`limit_pay`, dwp.`sign`, dwp.`return_code`, dwp.`return_msg`, dwp.`result_code`, dwp.`err_code`, dwp.`err_code_des`, dwp.`openid`, dwp.`is_subscribe`, dwp.`return_sign`, dwp.`transaction_id`, dwp.`time_end`, dwp.`out_refund_no`, dwp.`refund_fee`, dwp.`op_user_id`, dwp.`refund_id`, dwp.`pay_status`, dwp.`add_time`, dwp.`isvalid`, dwp.`cardno`
+        FROM `darts_wx_pay` as dwp
+        WHERE 1=1
+            AND dwp.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dwp.${orderSql}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.RaceInfoMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.RaceInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="raceno" jdbcType="VARCHAR" property="raceno" />
+    <result column="racename" jdbcType="VARCHAR" property="racename" />
+    <result column="cno" jdbcType="VARCHAR" property="cno" />
+    <result column="cname" jdbcType="VARCHAR" property="cname" />
+    <result column="minimum_num" jdbcType="INTEGER" property="minimum_num" />
+    <result column="racestart" jdbcType="TIMESTAMP" property="racestart" />
+    <result column="raceend" jdbcType="TIMESTAMP" property="raceend" />
+    <result column="regstart" jdbcType="TIMESTAMP" property="regstart" />
+    <result column="regend" jdbcType="TIMESTAMP" property="regend" />
+    <result column="raceplace" jdbcType="VARCHAR" property="raceplace" />
+    <result column="raceurl" jdbcType="VARCHAR" property="raceurl" />
+    <result column="consdes" jdbcType="VARCHAR" property="consdes" />
+    <result column="dstatus" jdbcType="TINYINT" property="dstatus" />
+    <result column="isvalid" jdbcType="TINYINT" property="isvalid" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+  </resultMap>
+  
+  <select id="queryRaceInfoList" resultType="map">
+        SELECT
+            dri.raceno,dri.racename,dri.cno,dri.cname,dri.minimum_num,
+            DATE_FORMAT(dri.racestart,'%Y-%m-%d') as racestart,
+            DATE_FORMAT(dri.raceend,'%Y-%m-%d') as raceend,
+            DATE_FORMAT(dri.regstart,'%Y-%m-%d') as regstart,
+            DATE_FORMAT(dri.regend,'%Y-%m-%d') as regend,
+            dri.raceplace,dri.raceurl,dri.consdes,dri.dstatus
+        FROM darts_race_info as dri
+        WHERE 1=1 
+            <if test="cno != null and cno != ''">
+                AND dri.cno=#{cno}
+            </if>
+            <if test="dstatus != null and dstatus != ''">
+                AND dri.dstatus=#{dstatus}
+            </if>
+            AND dri.isvalid = 1
+            ORDER BY dri.id DESC
+    </select>
+    
+    
+  <select id="queryMyRaceInfoList" resultType="map">
+        SELECT
+            dri.raceno,dri.racename,dri.cno,dri.cname,dri.minimum_num,
+            DATE_FORMAT(dri.racestart,'%Y-%m-%d') as racestart,
+            DATE_FORMAT(dri.raceend,'%Y-%m-%d') as raceend,
+            DATE_FORMAT(dri.regstart,'%Y-%m-%d') as regstart,
+            DATE_FORMAT(dri.regend,'%Y-%m-%d') as regend,
+            dri.raceplace,dri.raceurl,dri.consdes,dri.dstatus
+        FROM darts_race_info as dri
+        LEFT JOIN darts_race_enterfor_user as dreu on dri.raceno=dreu.raceno
+        WHERE 1=1 
+            <if test="user_id != null and user_id != ''">
+                AND dreu.user_id=#{user_id}
+            </if>
+            AND dri.isvalid = 1
+            ORDER BY dri.id DESC
+    </select>
+    
+</mapper>

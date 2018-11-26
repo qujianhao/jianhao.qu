@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.ClubMonthRankMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.ClubMonthRank">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="cno" jdbcType="VARCHAR" property="cno" />
+    <result column="athletics_num" jdbcType="INTEGER" property="athletics_num" />
+    <result column="strength_value" jdbcType="INTEGER" property="strength_value" />
+    <result column="rank_time" jdbcType="VARCHAR" property="rank_time" />
+  </resultMap>
+
+    <select id="queryClubMonthRankList" resultType="map">
+        SELECT
+            dcmr.`id`, dcmr.`cno`, dcmr.`athletics_num`, dcmr.`strength_value`, dcmr.`rank_time`
+        FROM `darts_club_month_rank` as dcmr
+        WHERE 1=1
+            AND dcmr.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dcmr.${orderSql}
+        </if>
+    </select>
+    
+    <select id="queryAthleticsClubMonthRankInfoList" resultType="map">
+    SELECT
+		rk.*
+	FROM
+		(
+			SELECT
+				ra.*,@rank := @rank + 1 AS rank
+			FROM
+				(
+					SELECT
+						t.athletics_num,
+						clu.id,
+						clu.cname,
+						cp.province,
+						clu.logo 
+					FROM
+						darts_club_month_rank  t
+					LEFT JOIN darts_club_info clu ON clu.cno = t.cno
+					LEFT JOIN darts_club_place cp ON cp.cno = t.cno
+					WHERE clu.isvalid=1
+					<if test="province != null and province != ''">
+					AND cp.`province` = #{province}
+					</if>
+					<if test="rank_time != null and rank_time != ''">
+					AND t.`rank_time` = #{rank_time}
+					</if>
+					<if test="acac != null and acac != ''">
+					AND clu.`acac` = #{acac}
+				    </if>
+					GROUP BY 
+						t.cno
+	        ORDER BY athletics_num desc ) ra,
+						(SELECT @rank := 0) r
+				) AS rk
+			WHERE
+				1 = 1
+    </select>
+    
+    <select id="queryStrengthClubMonthRankInfoList" resultType="map">
+    SELECT
+		rk.*
+	FROM
+		(
+			SELECT
+				ra.*,@rank := @rank + 1 AS rank
+			FROM
+				(
+					SELECT
+						t.strength_value,
+						clu.id,
+						clu.cname,
+						cp.province,
+						clu.logo 
+					FROM
+						darts_club_month_rank  t
+					LEFT JOIN darts_club_info clu ON clu.cno = t.cno
+					LEFT JOIN darts_club_place cp ON cp.cno = t.cno
+					WHERE  clu.isvalid=1
+					<if test="province != null and province != ''">
+					AND cp.`province` = #{province}
+					</if>
+					<if test="rank_time != null and rank_time != ''">
+					AND t.`rank_time` = #{rank_time}
+					</if>
+					<if test="acac != null and acac != ''">
+					AND clu.`acac` = #{acac}
+				    </if>
+					GROUP BY 
+						t.cno
+	        ORDER BY strength_value desc ) ra,
+						(SELECT @rank := 0) r
+				) AS rk
+			WHERE
+				1 = 1
+    </select>
+    
+    <insert id="insertClubMonthRank" parameterType="java.util.Map">
+    INSERT INTO darts_club_month_rank SELECT
+		*
+	FROM
+		(
+			SELECT
+				0 AS id,
+				strength.cno,
+				strength.athletics_num,
+				ROUND(
+					 (
+						(
+							CASE 
+							WHEN (IFNULL(strength.addMember, 0) <![CDATA[<]]> 100) THEN
+								5 * IFNULL(strength.addMember, 0)
+							WHEN (100 <![CDATA[<=]]> strength.addMember and  strength.addMember <![CDATA[<=]]> 150) THEN
+								5.3 * strength.addMember
+							WHEN (151 <![CDATA[<=]]> strength.addMember and  strength.addMember <![CDATA[<=]]> 300) THEN
+								5.6 * strength.addMember
+							WHEN (strength.addMember <![CDATA[>]]> 300) THEN
+								6.0 * strength.addMember
+							ELSE
+								0
+							END
+						) + (
+							CASE
+							WHEN (IFNULL(strength.payNum, 0) <![CDATA[<]]> 500) THEN
+								1.0 * IFNULL(strength.payNum, 0)
+							WHEN (500 <![CDATA[<=]]> strength.payNum and strength.payNum <![CDATA[<=]]> 1000) THEN
+								1.3 * strength.payNum
+							WHEN (1001 <![CDATA[<=]]> strength.payNum and strength.payNum<![CDATA[<=]]> 2000) THEN
+								1.6 * strength.payNum
+							WHEN (strength.payNum <![CDATA[>]]> 2000) THEN
+								2.0 * strength.payNum
+							ELSE
+								0
+							END
+						) + (
+							CASE
+							WHEN (IFNULL(strength.game_num, 0) <![CDATA[<]]> 300) THEN
+								1.0 * IFNULL(strength.game_num, 0)
+							WHEN (300 <![CDATA[<=]]> strength.game_num and strength.game_num<![CDATA[<=]]> 500) THEN
+								1.3 * strength.game_num
+							WHEN (501 <![CDATA[<=]]> strength.game_num and strength.game_num<![CDATA[<=]]> 800) THEN
+								1.6 * strength.game_num
+							WHEN (strength.game_num <![CDATA[>]]> 800) THEN
+								2.0 * strength.game_num
+							ELSE
+								0
+							END
+						)
+					) / strength.equ_num
+				) AS strength_value,
+				#{rank_time} AS rank_time
+			FROM
+				(
+					SELECT
+						t.cno,
+						(
+							SELECT
+								count(*)
+							FROM
+								darts_club_member me
+							WHERE
+								me.create_time like concat(#{rank_time}, '%') 
+							AND me.cno = t.cno
+						) AS addMember,
+						(
+							SELECT
+								sum(co.amount)
+							FROM
+								darts_commission co
+							WHERE
+								co.pay_time like concat(#{rank_time}, '%') 
+							AND co.cno = t.cno
+						) AS payNum,
+						(
+							SELECT
+								SUM(game_num) AS game_num
+							FROM
+								(
+									SELECT
+										(
+											CASE
+											WHEN go.game_mode = 1 THEN
+												1 * count(*)
+											WHEN go.game_mode = 2 THEN
+												2 * count(*)
+											WHEN go.game_mode = 3 THEN
+												3 * count(*)
+											WHEN go.game_mode = 4 THEN
+												4 * count(*)
+											WHEN go.game_mode = 5 THEN
+												4 * count(*)
+											WHEN go.game_mode = 6 THEN
+												6 * count(*)
+											WHEN go.game_mode = 7 THEN
+												1 * count(*)
+											ELSE
+												0
+											END
+										) AS game_num,
+										go.auth_no
+									FROM
+										darts_game_order go
+									WHERE
+										go.order_time like concat(#{rank_time}, '%') 
+									AND go.status = 4
+									GROUP BY
+										go.game_mode
+								) AS game
+							WHERE
+								game.auth_no = t.cno
+						) AS game_num,
+						(
+							SELECT
+								count(*)
+							FROM
+								darts_equ_auth eq
+							WHERE
+								eq.auth_no = t.cno
+						) AS equ_num,
+						(
+							SELECT
+								count(*) * 10 AS athletics_num
+							FROM
+								darts_game_order ath
+							WHERE
+								ath.auth_no = t.cno
+							AND ath.`status` = 4
+							AND ath.order_time like concat(#{rank_time}, '%') 
+							GROUP BY
+								ath.auth_no
+						) AS athletics_num
+					FROM
+						darts_club_info t
+					LEFT JOIN darts_club_place cp ON cp.cno = t.cno
+					WHERE
+						t.isvalid = 1
+				) AS strength
+		) indata
+	WHERE
+		indata.athletics_num > 0
+	OR indata.strength_value > 0
+    </insert>
+</mapper>

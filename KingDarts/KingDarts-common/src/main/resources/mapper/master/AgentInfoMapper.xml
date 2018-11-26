@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.AgentInfoMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.AgentInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="agno" jdbcType="VARCHAR" property="agno" />
+    <result column="pagno" jdbcType="VARCHAR" property="pagno" />
+    <result column="agname" jdbcType="VARCHAR" property="agname" />
+    <result column="captain" jdbcType="VARCHAR" property="captain" />
+    <result column="card_id" jdbcType="VARCHAR" property="card_id" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="telno" jdbcType="VARCHAR" property="telno" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="qq" jdbcType="VARCHAR" property="qq" />
+    <result column="ag_addr" jdbcType="VARCHAR" property="ag_addr" />
+    <result column="lnglat" jdbcType="DECIMAL" property="lnglat" />
+    <result column="latitude" jdbcType="DECIMAL" property="latitude" />
+    <result column="resum" jdbcType="DECIMAL" property="resum" />
+    <result column="incomes" jdbcType="DECIMAL" property="incomes" />
+    <result column="expends" jdbcType="DECIMAL" property="expends" />
+    <result column="ag_password" jdbcType="VARCHAR" property="ag_password" />
+    <result column="ag_level" jdbcType="BIT" property="ag_level" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="isvalid" jdbcType="INTEGER" property="isvalid" />
+    <result column="racepht" jdbcType="VARCHAR" property="racepht" />
+    <result column="ag_type" jdbcType="VARCHAR" property="ag_type" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="areas" jdbcType="VARCHAR" property="areas" />
+    <result column="companyscale" jdbcType="DECIMAL" property="companyscale" />
+    <result column="agentscale" jdbcType="DECIMAL" property="agentscale" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+
+    <select id="queryAgentInfoList" resultType="map">
+        SELECT
+            id, agno, pagno, agname, captain, card_id, mobile, telno, email, qq, ag_addr, lnglat, latitude, resum, incomes, expends, ag_password, ag_level, add_time, update_time, isvalid, racepht, ag_type, country, province, city, areas, version
+        FROM darts_agent_info
+        WHERE 1=1
+        	<if test="agno != null and agno != ''">
+                AND agno like concat('%', #{agno}, '%')
+            </if>
+            <if test="agname != null and agname != ''">
+                AND agname like concat('%', #{agname}, '%')
+            </if>
+            AND isvalid = 1
+        ORDER BY id DESC
+    </select>
+    
+    <update id="rechargeCommission">
+    	update darts_agent_info 
+    	<set>
+    	resum = resum + #{resum} 
+    	<if test="incomes != null ">, incomes = incomes + #{incomes}</if>
+    	</set> 
+    	<where> 
+    		agno = #{agno} 
+    		<if test="version != null ">and version = #{version} </if>
+    	</where>
+    </update>
+    
+    <update id="updateResumByAgno">
+    	update darts_agent_info 
+    	<set>
+    	resum = resum + #{resum} 
+    	</set> 
+    	<where> 
+    		agno = #{agno} 
+    		<if test="version != null ">and version = #{version} </if>
+    	</where>
+    </update>
+    
+    <select id="queryAgentEquInfoList" resultType="map">
+    	(SELECT
+			(CASE WHEN dea1.equno is NOT NULL THEN dai1.agno ELSE NULL END) as agno,
+			(CASE WHEN dea1.equno is NOT NULL THEN dai1.agname ELSE NULL END) as agname,
+			(CASE WHEN dea1.equno is NOT NULL THEN dci1.cname ELSE NULL END) as cname,
+			dea1.equno,
+			dei1.equname,
+			dei1.models,
+			dei1.id
+		FROM
+			darts_agent_info AS dai1
+		INNER JOIN darts_club_info AS dci1 ON dci1.agno = dai1.agno
+		INNER JOIN darts_equ_auth AS dea1 ON dea1.auth_no = dci1.cno
+		INNER JOIN darts_equ_info AS dei1 ON dei1.equno = dea1.equno
+		WHERE
+			1 = 1
+		AND dai1.agno = #{agno}
+		AND dei1.isvalid=1
+		<if test="equno != null and equno != ''">
+            AND dei1.equno like concat('%', #{equno}, '%')
+        </if>
+        ORDER BY dea1.add_time DESC)
+		UNION ALL
+			(SELECT
+				(CASE WHEN dea2.equno is NOT NULL THEN dai2.agno ELSE NULL END) as agno,
+				(CASE WHEN dea2.equno is NOT NULL THEN dai2.agname ELSE NULL END) as agname,
+				(CASE WHEN dea2.equno is NOT NULL THEN NULL ELSE NULL END) as cname,
+				dea2.equno,
+				dei2.equname,
+				dei2.models,
+				dei2.id
+			FROM
+				darts_agent_info AS dai2
+			INNER JOIN darts_equ_auth AS dea2 ON dea2.auth_no = dai2.agno
+			INNER JOIN darts_equ_info AS dei2 ON dei2.equno = dea2.equno
+			WHERE
+				1 = 1
+			AND dai2.agno = #{agno}
+		    AND dei2.isvalid=1
+			<if test="equno != null and equno != ''">
+	           AND dei2.equno like concat('%', #{equno}, '%')
+	       	</if>
+	       	ORDER BY dea2.add_time DESC)
+    </select>
+</mapper>

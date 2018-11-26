@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.MerchantAccountMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.MerchantAccount">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="merno" jdbcType="VARCHAR" property="merno" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="mertype" jdbcType="BIT" property="mertype" />
+    <result column="accountnames" jdbcType="VARCHAR" property="accountnames" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="acouuntno" jdbcType="VARCHAR" property="acouuntno" />
+    <result column="bankname" jdbcType="VARCHAR" property="bankname" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="isdelete" jdbcType="INTEGER" property="isdelete" />
+  </resultMap>
+
+    <select id="queryMerchantAccountList" resultType="map">
+        SELECT
+            dma.`id`, dma.`merno`, dma.`mertype`, dma.`accountnames`, dma.`acouuntno`, dma.`bankname`, dma.`createtime`
+        FROM `darts_merchant_account` as dma
+        WHERE 1=1
+            <if test="accountnames != null and accountnames != ''">
+                AND dma.accountnames like concat('%', #{accountnames}, '%')
+            </if>
+            <if test="bankname != null and bankname != ''">
+                AND dma.bankname like concat('%', #{bankname}, '%')
+            </if>
+            AND dma.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dma.${orderSql}
+        </if>
+    </select>
+</mapper>

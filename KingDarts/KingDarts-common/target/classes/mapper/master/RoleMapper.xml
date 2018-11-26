@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.RoleEntityMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.results.core.RoleResult">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="order_num" jdbcType="INTEGER" property="order_num" />
+    <result column="is_publish" jdbcType="TINYINT" property="is_publish" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="code_content" jdbcType="LONGVARCHAR" property="code_content" />
+    <result column="prem_content" jdbcType="LONGVARCHAR" property="prem_content" />
+  </resultMap>
+
+    <select id="queryRoleList" resultType="map">
+        SELECT
+          wr.`id`, wr.`name`, wr.`code_content` as codeContent, wr.`prem_content` as premContent , wr.`order_num` as orderNum,
+          wr.`is_publish` as isPublish, wr.`is_delete` as isDelete, wr.`update_time` as updateTime
+        FROM `wt_role` as wr
+        WHERE 1=1
+            <if test="name != null and name != ''">
+                AND wr.name like concat('%', #{name}, '%')
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND wr.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND wr.#{update_time_end} >= update_time
+            </if>
+            AND wr.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY wr.${orderSql}
+        </if>
+    </select>
+    
+    <select id="queryRoleResultList" resultMap="BaseResultMap">
+        SELECT
+            wr.`id`, wr.`name`, wr.`code_content` as codeContent, wr.`prem_content` as premContent , wr.`order_num` as orderNum,
+            wr.`is_publish` as isPublish, wr.`is_delete` as isDelete, wr.`update_time` as updateTime
+        FROM `wt_role` as wr
+        WHERE 1=1
+            <if test="name != null and name != ''">
+                AND wr.name like concat('%', #{name}, '%')
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND wr.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND wr.#{update_time_end} >= update_time
+            </if>
+            AND wr.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY wr.${orderSql}
+        </if>
+    </select>
+</mapper>

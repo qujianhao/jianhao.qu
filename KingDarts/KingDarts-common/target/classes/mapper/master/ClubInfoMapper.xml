@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.ClubInfoMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.ClubInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="cno" jdbcType="VARCHAR" property="cno" />
+    <result column="cname" jdbcType="VARCHAR" property="cname" />
+    <result column="agno" jdbcType="VARCHAR" property="agno" />
+    <result column="ctype" jdbcType="BIT" property="ctype" />
+    <result column="captain" jdbcType="VARCHAR" property="captain" />
+    <result column="cardid" jdbcType="VARCHAR" property="cardid" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="telno" jdbcType="VARCHAR" property="telno" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="qq" jdbcType="VARCHAR" property="qq" />
+    <result column="resum" jdbcType="DECIMAL" property="resum" />
+    <result column="incomes" jdbcType="DECIMAL" property="incomes" />
+    <result column="expends" jdbcType="DECIMAL" property="expends" />
+    <result column="clubintr" jdbcType="INTEGER" property="clubintr" />
+    <result column="c_password" jdbcType="VARCHAR" property="c_password" />
+    <result column="activate_flag" jdbcType="BIT" property="activate_flag" />
+    <result column="commnets" jdbcType="INTEGER" property="commnets" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="isvalid" jdbcType="INTEGER" property="isvalid" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="describe_message" jdbcType="VARCHAR" property="describe_message" />
+    <result column="game_price" jdbcType="DECIMAL" property="game_price" />
+    <result column="manage_game_price" jdbcType="DECIMAL" property="manage_game_price" />
+    <result column="price_start_time" jdbcType="TIMESTAMP" property="price_start_time" />
+    <result column="price_end_time" jdbcType="TIMESTAMP" property="price_end_time" />
+    <result column="companyscale" jdbcType="DECIMAL" property="companyscale" />
+    <result column="clubscale" jdbcType="DECIMAL" property="clubscale" />
+    <result column="acac" jdbcType="INTEGER" property="acac" />
+  </resultMap>
+
+    <select id="queryClubInfoList" resultType="map">
+        SELECT
+            dci.id, dci.cno, dci.cname, dci.agno, dci.ctype, dci.captain, dci.mobile, dci.telno, dci.email, dci.qq, dci.resum, dci.incomes, dci.expends, dci.clubintr, dci.c_password, dci.activate_flag, dci.commnets, dci.add_time, dci.update_time, dci.isvalid, dci.logo, dci.version, dci.describe_message,dci.acac
+        FROM darts_club_info as dci
+        WHERE 1=1 
+            <if test="cname != null and cname != ''">
+                AND dci.cname like concat('%', #{cname}, '%')
+            </if>
+            <if test="cno != null and cno != ''">
+                AND dci.cno like concat('%', #{cno}, '%')
+            </if>
+            <if test="describe_message != null and describe_message != ''">
+                AND dci.describe_message like concat('%', #{describe_message}, '%')
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dci.update_time >= #{update_time_start} 
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dci.#{update_time_end} >= update_time
+            </if>
+            AND dci.isvalid = 1
+            ORDER BY dci.id DESC
+    </select>
+    
+    <select id="queryAccountClubInfoList" resultType="map">
+        SELECT
+            dci.id, dci.cno, dci.cname, dci.agno, dci.ctype, dci.captain, dci.mobile, dci.telno, dci.email, dci.qq, dci.resum, dci.incomes, dci.expends, dci.clubintr, dci.c_password, dci.activate_flag, dci.commnets, dci.add_time, dci.update_time, dci.isvalid, dci.logo, dci.version, dci.describe_message,dci.acac
+        FROM darts_club_info as dci
+        WHERE  (dci.agno is null or dci.agno = '')
+            <if test="cname != null and cname != ''">
+                AND dci.cname like concat('%', #{cname}, '%')
+            </if>
+            <if test="cno != null and cno != ''">
+                AND dci.cno like concat('%', #{cno}, '%')
+            </if>
+            <if test="describe_message != null and describe_message != ''">
+                AND dci.describe_message like concat('%', #{describe_message}, '%')
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dci.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dci.#{update_time_end} >= update_time
+            </if>
+            AND dci.isvalid = 1
+            ORDER BY dci.id DESC
+    </select>
+    
+    <!-- 查询代理商名下俱乐部 -->
+    <select id="queryAgentClubInfoList" resultType="map">
+    	SELECT
+			dci.*
+		FROM
+			darts_club_info AS dci
+		LEFT JOIN darts_agent_info AS dai ON dci.agno = dai.agno
+		WHERE
+			dai.isvalid = 1
+		AND dci.isvalid = 1
+		<if test="agno != null and agno != ''">
+            AND dai.agno = #{agno}
+        </if>
+		<if test="cname != null and cname != ''">
+            AND dci.cname like concat('%', #{cname}, '%')
+        </if>
+        <if test="cno != null and cno != ''">
+            AND dci.cno like concat('%', #{cno}, '%')
+        </if>
+        <if test="describe_message != null and describe_message != ''">
+            AND dci.describe_message like concat('%', #{describe_message}, '%')
+        </if>
+        ORDER BY dci.id DESC
+    </select>
+    
+    <!-- 根据代理商编号获取俱乐部列表并查找授权的设备的数量 -->
+    <select id="getClubListByAgno"  resultType="map">
+    	SELECT
+			dci.*, (
+				SELECT
+					count(*)
+				FROM
+					darts_equ_auth AS dea1 LEFT JOIN darts_equ_info as dei on dei.equno = dea1.equno
+				WHERE dea1.auth_no=dci.cno and 
+					dea1.auth_type = 1 and 
+					dei.isvalid = 1
+			) as total,
+			dcp.address
+		FROM
+			darts_club_info AS dci
+		left join darts_club_place as dcp on dcp.cno=dci.cno
+		WHERE
+			 dci.agno = #{agno}
+		AND dci.isvalid = 1
+		ORDER BY dci.id DESC
+    </select>
+    
+    <select id="getPriceByEquNo" parameterType="java.lang.String" resultType="map">
+        SELECT
+			dei.game_price,
+			(
+				SELECT
+					dci1.manage_game_price
+				FROM
+					darts_club_info AS dci1
+				LEFT JOIN darts_equ_auth AS dea1 ON dea1.auth_no = dci1.cno
+				LEFT JOIN darts_equ_info AS dei1 ON dei1.equno = dea1.equno
+				WHERE
+					dci1.price_end_time >= NOW()
+				AND NOW() >= dci1.price_start_time
+				AND dei1.isvalid = 1
+				AND dea1.equno = #{equno}
+			) AS manage_game_price
+		FROM
+			darts_club_info AS dci
+		LEFT JOIN darts_equ_auth AS dea ON dea.auth_no = dci.cno
+		LEFT JOIN darts_equ_info AS dei ON dei.equno = dea.equno
+		WHERE
+			1 = 1
+		AND dei.isvalid = 1
+		AND dea.equno = #{equno}
+    </select>
+    
+    <update id="rechargeCommission">
+    	update darts_club_info 
+    	<set>
+    	resum = resum + #{resum} 
+    	<if test="incomes != null ">, incomes = incomes + #{incomes}</if>
+    	</set> 
+    	<where> 
+    		cno = #{cno} 
+    		<if test="version != null ">and version = #{version} </if>
+    	</where>
+    </update>
+    
+    <update id="updateResumByCno">
+    	update darts_club_info 
+    	<set>
+    	resum = resum + #{resum} 
+    	</set> 
+    	<where> 
+    		cno = #{cno} 
+    		<if test="version != null ">and version = #{version} </if>
+    	</where>
+    </update>
+    
+    <select id="queryClubByCno" resultMap="BaseResultMap">
+		SELECT
+		id, cno, cname
+		FROM 
+		darts_club_info club
+		WHERE club.isvalid = 1
+		AND   club.cno = #{clubCno}   
+	</select>
+	
+	<select id="queryClubOrder"  resultType="map">
+		select dci.cno ,dci.cname ,dci.describe_message ,dcp.province, dai.agname,sum(cost) cost
+			from darts_club_info dci INNER JOIN darts_club_place dcp ON dci.cno = dcp.cno
+		LEFT JOIN darts_agent_info dai ON dci.agno = dai.agno
+		LEFT JOIN darts_game_order dgo ON dci.cno = dgo.auth_no and status = 4
+		<where>
+			AND dci.isvalid = 1
+			<if test="cno != null and cno != ''">
+                AND dci.cno like concat('%', #{cno}, '%')
+            </if>
+			<if test="agno != null and agno != ''">
+                AND dci.agno like concat('%', #{agno}, '%')
+            </if>
+            <if test="describe_message != null and describe_message != ''">
+                AND dci.describe_message like concat('%', #{describe_message}, '%')
+            </if>
+            <if test="time_start != null and time_start != ''">
+                AND order_time &gt;= #{time_start}
+            </if>
+            <if test="time_end != null and time_end != ''">
+                AND order_time &lt;= #{time_end}
+            </if>
+		</where>
+		GROUP BY dci.cno
+		<if test="orderSql != null and orderSql != ''">
+            ORDER BY ${orderSql}
+        </if>
+	</select>
+</mapper>

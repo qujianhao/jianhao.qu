@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.UserGamePointsMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.UserGamePoints">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="game_type" jdbcType="VARCHAR" property="game_type" />
+    <result column="game_code" jdbcType="VARCHAR" property="game_code" />
+    <result column="points" jdbcType="INTEGER" property="points" />
+  </resultMap>
+
+    <select id="queryUserGamePointsList" resultType="map">
+        SELECT
+            dugp.`id`, dugp.`user_id`, dugp.`game_type`, dugp.`game_code`, dugp.`points`
+        FROM `darts_user_game_points` as dugp
+        WHERE 1=1
+            AND dugp.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dugp.${orderSql}
+        </if>
+    </select>
+    
+    <update id="changePoints">
+    	update darts_user_game_points 
+    	<set>
+    		points = points + #{points}
+    	</set> 
+    	<where> 
+    		id = #{id} 
+    	</where>
+    </update>
+</mapper>

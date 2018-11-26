@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.EquAuthMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.EquAuth">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="equno" jdbcType="VARCHAR" property="equno" />
+    <result column="auth_user" jdbcType="VARCHAR" property="auth_user" />
+    <result column="auth_type" jdbcType="BIT" property="auth_type" />
+    <result column="merchant" jdbcType="BIT" property="merchant" />
+    <result column="auth_no" jdbcType="VARCHAR" property="auth_no" />
+    <result column="auth_name" jdbcType="VARCHAR" property="auth_name" />
+    <result column="auth_time" jdbcType="TIMESTAMP" property="auth_time" />
+    <result column="placeno" jdbcType="VARCHAR" property="placeno" />
+    <result column="acc_type" jdbcType="BIT" property="acc_type" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+  </resultMap>
+
+    <select id="queryEquAuthList" resultType="map">
+        SELECT dei.equno , dei.equ_status , dei.equname ,dei.isowed,dei.models,dei.isactivation,dei.isline,dei.isentity, dci.cname
+		, dai.agname, dea.*
+        FROM darts_equ_info dei LEFT JOIN darts_equ_auth  dea ON dei.equno = dea.equno
+		LEFT JOIN darts_club_info dci ON dea.auth_no = dci.cno and dea.merchant = 1
+		LEFT JOIN darts_agent_info dai ON dea.auth_no = dai.agno and dea.merchant = 2
+        <where>
+        	<if test="equno != null and equno != ''"> AND dei.equno like concat('%', #{equno}, '%') </if>
+        	<if test="equ_status != null and equ_status != ''"> AND dei.equ_status = #{equ_status} </if>
+        	<if test="isowed != null and isowed != ''"> AND dei.isowed = #{isowed} </if>
+        	<if test="cno != null and cno != ''"> AND dci.cno = #{cno} </if>
+        	<if test="cname != null and cname != ''"> AND dci.cname like concat('%', #{cname}, '%') </if>
+        	<if test="agname != null and agname != ''"> AND dai.agname like concat('%', #{agname}, '%') </if>
+        	AND dei.isvalid = 1
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY ${orderSql}
+        </if>
+    </select>
+    
+    <!-- 查询代理商下未授权设备列表 -->
+    <select id="getEquNoAuthListByAgno" resultType="map">
+    	select dea.* 
+    	from darts_equ_auth as dea 
+    	left join darts_equ_info as dei on dea.equno=dei.equno
+    	where dea.merchant=2 AND dei.isvalid = 1 and dei.equ_status=1
+    	<if test="auth_no != null and auth_no != ''"> AND dea.auth_no = #{auth_no} </if>
+    	<if test="orderSql != null and orderSql != ''">
+            ORDER BY dea.${orderSql}
+        </if>
+    </select>
+    <!-- 查询代理商下已授权设备列表 -->
+    <select id="getEquYesAuthListByAgno" resultType="map">
+    	SELECT
+			dea.equno,
+			dci.cname
+		FROM
+			darts_equ_auth AS dea
+		LEFT JOIN darts_club_info AS dci ON dci.cno = dea.auth_no
+		LEFT JOIN darts_equ_info AS dei ON dei.equno = dea.equno
+		LEFT JOIN darts_agent_info AS dai ON dai.agno = dci.agno
+		WHERE
+			dei.isvalid = 1 and dea.merchant=1 and dei.equ_status=1 and dai.isvalid=1
+		AND dai.agno = #{agno}
+        <if test="cname != null and cname != ''">
+            AND dci.cname like concat('%', #{cname}, '%')
+        </if>
+		<if test="orderSql != null and orderSql != ''">
+            ORDER BY dea.${orderSql}
+        </if>
+    </select>
+    
+    <!-- 查询代理商下未授权设备数量 -->
+    <select id="getEquNoAuthCountByAgno"  parameterType="java.lang.String"  resultType="java.lang.Integer">
+    	select count(*) 
+    	from darts_equ_auth as dea 
+    	left join darts_equ_info as dei on dea.equno=dei.equno
+    	where dea.merchant=2 AND dei.isvalid = 1 and dei.equ_status=1
+    	AND dea.auth_no = #{auth_no}
+    </select>
+    <!-- 查询代理商下已授权设备数量 -->
+    <select id="getEquYesAuthCountByAgno"  parameterType="java.lang.String"  resultType="java.lang.Integer">
+    	SELECT
+			count(*)
+		FROM
+			darts_equ_auth AS dea
+		LEFT JOIN darts_club_info AS dci ON dci.cno = dea.auth_no
+		LEFT JOIN darts_equ_info AS dei ON dei.equno = dea.equno
+		LEFT JOIN darts_agent_info AS dai ON dai.agno = dci.agno
+		WHERE
+			dei.isvalid = 1 and dea.merchant=1 and dei.equ_status=1
+		AND dai.agno = #{agno}
+    </select>
+    
+    <!-- 俱乐部已激活设备 -->
+    <select id="getYesActivationByAuthNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+			count(*)
+		FROM
+			darts_equ_auth AS dea
+		LEFT JOIN darts_equ_info AS dei ON dea.equno = dei.equno
+		WHERE
+			dei.isactivation = 1
+		AND dei.isvalid = 1
+		AND dea.auth_no = #{auth_no}
+    </select>
+    
+    <!-- 俱乐部未激活设备 -->
+    <select id="getNoActivationByAuthNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT
+			count(*)
+		FROM
+			darts_equ_auth AS dea
+		LEFT JOIN darts_equ_info AS dei ON dea.equno = dei.equno
+		WHERE
+			dei.isactivation = 0
+		AND dei.isvalid = 1
+		AND dea.auth_no = #{auth_no}
+    </select>
+    
+    <!-- 根据设备查询分成比例 -->
+     <select id="queryEquCommission" resultType="map">
+        select ea.*,ci.companyscale acompanyscale,ci.clubscale ,ai.companyscale companyscale, ai.agentscale,ai.agno
+		from darts_equ_auth ea INNER JOIN darts_equ_info ei ON ea.equno = ei.equno
+		INNER JOIN darts_club_info ci ON ea.auth_no = ci.cno and ea.merchant = 1
+		LEFT JOIN darts_agent_info ai ON ai.agno = ci.agno
+        <where>
+        	<if test="equno != null and equno != ''"> AND ei.equno = #{equno} </if>
+        	<if test="isvalid != null"> AND ei.isvalid = #{isvalid} </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.UserMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.User">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="gender" jdbcType="TINYINT" property="gender" />
+    <result column="id_no" jdbcType="VARCHAR" property="id_no" />
+    <result column="areas" jdbcType="VARCHAR" property="areas" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="is_publish" jdbcType="INTEGER" property="is_publish" />
+    <result column="is_delete" jdbcType="INTEGER" property="is_delete" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="give_balance" jdbcType="DECIMAL" property="give_balance" />
+    <result column="coupon_balance" jdbcType="DECIMAL" property="coupon_balance" />
+    <result column="frozen" jdbcType="DECIMAL" property="frozen" />
+    <result column="points" jdbcType="INTEGER" property="points" />
+    <result column="unionid" jdbcType="VARCHAR" property="unionid" />
+    <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+
+    <select id="queryUserList" resultType="map">
+        SELECT
+            wu.`id`, wu.`uuid`, wu.`username`, wu.`password`, wu.`nickname`, wu.`gender`, wu.`birthday`, wu.`mobile`, wu.`email`, wu.`update_time`, wu.`is_publish`, wu.`is_delete`, wu.`amount`, wu.`balance`, wu.`give_balance`, wu.`coupon_balance`, wu.`frozen`, wu.`points`, wu.`unionid`, wu.`headimgurl`, wu.`version`
+        FROM `wt_user` as wu
+        <where>
+        	<if test="username != null and username != ''">
+                AND wu.username like concat('%', #{username}, '%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                AND wu.nickname like concat('%', #{nickname}, '%')
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND wu.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND wu.#{update_time_end} >= update_time
+            </if>
+            AND wu.is_delete = 0
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY wu.${orderSql}
+        </if>
+    </select>
+    
+    <update id="consumeRecharge">
+    	update wt_user 
+    	<set>
+    	balance = balance + #{balance} 
+    	<if test="give_balance != null ">, give_balance = give_balance + #{give_balance}</if>
+    	<if test="coupon_balance != null ">, coupon_balance = coupon_balance + #{coupon_balance}</if>
+    	<if test="points != null ">, points = points + #{points}</if>
+    	<if test="amount != null ">, amount = amount + #{amount}</if>
+    	</set> 
+    	<where> 
+    		uuid = #{uuid} 
+    		<if test="version != null ">and version = #{version} </if>
+    	</where>
+    </update>
+	
+
+	<select id="getByUserAccount" resultMap="BaseResultMap">
+		SELECT 
+		u.*
+		FROM wt_user u
+		WHERE u.uuid = #{useraccount}
+		AND u.is_publish = 1
+		AND u.is_delete = 0
+	</select>
+
+	<select id="getUserRankByHistoryPoints" resultType="map">
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					tp.*,@rank := @rank + 1 AS rank
+				FROM
+					(
+						SELECT
+							tm.user_id,
+							tm.points,
+							tm.rank_time,
+							t.nickname
+						FROM
+							darts_user_points_month tm
+						LEFT JOIN wt_user t ON t.uuid = tm.user_id
+						WHERE 1=1 
+						<if test="rank_time != null and rank_time != ''">
+			                AND tm.rank_time = #{rank_time}
+			            </if>
+			            <if test="country != null and country != ''">
+			                AND t.country = #{country}
+			            </if>
+			            <if test="province != null and province != ''">
+			               AND  t.province = #{province}
+			            </if>
+						ORDER BY
+							tm.points DESC
+					) AS tp,
+					(SELECT @rank := 0) r
+			) AS te
+		WHERE
+			1 = 1
+			<if test="user_id != null and user_id != ''">
+                AND te.user_id = #{user_id}
+            </if>
+            <if test="top_num !=null and top_num !=''">
+	            LIMIT #{top_num}  
+	        </if>
+	</select>
+	
+	<select id="getHisUserList" resultType="map">
+		select * from darts_his_user
+		<where>
+			<if test="wcopenid != null and wcopenid != ''">and wcopenid = #{wcopenid}</if>
+			<if test="unionid != null and unionid != ''">and unionid = #{unionid}</if>
+		</where>
+	</select>
+	
+	<update id="updateHisUserUnionid">
+    	update darts_his_user 
+    	<set>
+    	unionid = #{unionid} 
+    	</set> 
+    	<where> 
+    		wcopenid = #{openid} 
+    	</where>
+    </update>
+
+</mapper>

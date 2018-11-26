@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.LftRechargeRuleMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.LftRechargeRule">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="money" jdbcType="FLOAT" property="money" />
+    <result column="game_balance" jdbcType="FLOAT" property="game_balance" />
+    <result column="give_game_balance" jdbcType="FLOAT" property="give_game_balance" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="isvalid" jdbcType="BIT" property="isvalid" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+  </resultMap>
+
+</mapper>

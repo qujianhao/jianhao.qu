@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.ClubPlaceMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.ClubPlace">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="placeno" jdbcType="VARCHAR" property="placeno" />
+    <result column="place_name" jdbcType="VARCHAR" property="place_name" />
+    <result column="consdes" jdbcType="VARCHAR" property="consdes" />
+    <result column="cno" jdbcType="VARCHAR" property="cno" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="synopsis" jdbcType="VARCHAR" property="synopsis" />
+    <result column="details" jdbcType="VARCHAR" property="details" />
+    <result column="detailurl" jdbcType="VARCHAR" property="detailurl" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="areas" jdbcType="VARCHAR" property="areas" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="lnglat" jdbcType="VARCHAR" property="lnglat" />
+    <result column="longitude" jdbcType="DECIMAL" property="longitude" />
+    <result column="latitude" jdbcType="DECIMAL" property="latitude" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="isvalid" jdbcType="INTEGER" property="isvalid" />
+    <result column="pcaptain" jdbcType="VARCHAR" property="pcaptain" />
+    <result column="pcardid" jdbcType="VARCHAR" property="pcardid" />
+    <result column="pmobile" jdbcType="INTEGER" property="pmobile" />
+    <result column="ptelno" jdbcType="VARCHAR" property="ptelno" />
+    <result column="pemail" jdbcType="VARCHAR" property="pemail" />
+    <result column="pqq" jdbcType="VARCHAR" property="pqq" />
+    <result column="businesshour" jdbcType="VARCHAR" property="businesshour" />
+    <result column="commnets" jdbcType="INTEGER" property="commnets" />
+  </resultMap>
+  
+  <select id="queryNearClubPlaceInfoList" resultType="map">
+       SELECT
+			d.id,
+			(select count(*)  from  darts_equ_auth au left join darts_equ_info eqin on 
+			eqin.equno=au.equno where au.auth_no=t.cno) as equnum,
+			(select count(*)  from  darts_equ_auth au left join darts_equ_info eqin on 
+			eqin.equno=au.equno where au.auth_no=t.cno and eqin.isactivation=1) as activenum,
+			d.cname,
+			t.placeno,
+			t.place_name,
+			t.cno,
+			d.logo as logourl,
+			t.address,
+			<if  test="longitude!=null and longitude!='' and latitude!=null and latitude!=''">
+			IFNULL(ROUND(6371*acos(cos(radians(t.latitude))*cos(radians(#{latitude}))*cos(radians(#{longitude})-radians(t.longitude))+sin(radians(t.latitude))*sin(radians(#{latitude}))),2) ,0) distance,
+			</if>
+			t.longitude,
+			t.latitude
+		FROM
+			darts_club_place t
+		LEFT JOIN darts_club_info d ON t.cno = d.cno 
+		WHERE
+			d.isvalid = 1
+			<if  test="longitude!=null and longitude!='' and latitude!=null and latitude!=''"> and t.longitude is not null and t.latitude is not null</if>
+		    <if test="country != null and country != ''">
+		       AND t.country =#{country}    
+		    </if>
+		    <if test="province != null and province != ''">
+		       AND t.province =#{province}            
+		    </if>
+		    <if test="city != null and city != ''">
+		       AND t.city =#{city}   
+		    </if>
+		    <if test="areas != null and areas != ''">
+		       AND t.areas =#{areas}            
+		    </if>
+		    <if test="cname != null and cname != ''">
+		       AND d.cname like concat('%', #{cname}, '%')      
+		    </if>
+	        <if  test="longitude!=null and longitude!='' and latitude!=null and latitude!=''">
+	           ORDER BY  distance
+	        </if>
+    </select>
+    
+    <select id="queryNearClubPlaceInfo" resultType="map">
+       SELECT
+			d.id,
+			(select count(*)  from  darts_equ_auth au left join darts_equ_info eqin on 
+			eqin.equno=au.equno where au.auth_no=t.cno) as equnum,
+			(select count(*)  from  darts_equ_auth au left join darts_equ_info eqin on 
+			eqin.equno=au.equno where au.auth_no=t.cno and eqin.isactivation=1) as activenum,
+			d.cname,
+			t.placeno,
+			t.place_name,
+			t.cno,
+			d.logo as logourl,
+			t.address,
+			<if  test="longitude!=null and longitude!='' and latitude!=null and latitude!=''">
+			IFNULL(ROUND(6371*acos(cos(radians(t.latitude))*cos(radians(#{latitude}))*cos(radians(#{longitude})-radians(t.longitude))+sin(radians(t.latitude))*sin(radians(#{latitude}))),2) ,0) distance,
+			</if>
+			t.longitude,
+			t.latitude
+		FROM
+			darts_club_place t
+		LEFT JOIN darts_club_info d ON t.cno = d.cno 
+		WHERE
+			d.isvalid = 1
+			<if  test="longitude!=null and longitude!='' and latitude!=null and latitude!=''"> and t.longitude is not null and t.latitude is not null</if>
+		    <if test="country != null and country != ''">
+		       AND t.country =#{country}    
+		    </if>
+		    <if test="province != null and province != ''">
+		       AND t.province =#{province}            
+		    </if>
+		    <if test="city != null and city != ''">
+		       AND t.city =#{city}   
+		    </if>
+		    <if test="areas != null and areas != ''">
+		       AND t.areas =#{areas}            
+		    </if>
+		    <if test="cname != null and cname != ''">
+		       AND d.cname like concat('%', #{cname}, '%')      
+		    </if>
+		    <if  test="longitude!=null and longitude!='' and latitude!=null and latitude!=''">
+	           ORDER BY  distance LIMIT 1
+	        </if>
+    </select>
+    
+    <select id="queryAthleticsClubInfoList" resultType="map">
+       SELECT
+			rk.*
+		FROM
+			(
+			SELECT
+				ra.*,@rank := @rank + 1 AS rank
+			FROM
+				(
+					SELECT
+						count(*) * 10 as athletics_num,
+						clu.id,
+						clu.cname,
+						cp.province,
+						cp.address,
+						cp.longitude,
+						cp.latitude,
+						clu.logo 
+					FROM
+						darts_game_order t
+					LEFT JOIN darts_club_info clu ON clu.cno = t.auth_no
+					LEFT JOIN darts_club_place cp ON cp.cno = t.auth_no
+					WHERE  clu.isvalid=1 AND t.`status` = 4
+					And DATE_FORMAT( t.order_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )  
+					<if test="province != null and province != ''">
+					AND cp.`province` = #{province}
+					</if>
+					<if test="acac != null and acac != ''">
+					AND clu.`acac` = #{acac}
+				    </if>
+					GROUP BY
+						t.auth_no
+	        ORDER BY athletics_num desc ) ra,
+						(SELECT @rank := 0) r
+				) AS rk
+		WHERE  1 = 1
+    </select>
+    
+    <select id="queryStrengthClubInfoList" resultType="map">
+	SELECT
+		rk.*
+	FROM
+		(
+          SELECT
+			da.*,@rank := @rank + 1 AS rank
+		  FROM
+			 (
+			SELECT
+				ra.*
+			FROM
+			   (
+             SELECT
+			   ROUND(
+				   (
+					(
+						CASE 
+						WHEN (IFNULL(strength.addMember, 0) <![CDATA[<]]> 100) THEN
+							5 * IFNULL(strength.addMember, 0)
+						WHEN (100 <![CDATA[<=]]> strength.addMember and  strength.addMember <![CDATA[<=]]> 150) THEN
+							5.3 * strength.addMember
+						WHEN (151 <![CDATA[<=]]> strength.addMember and  strength.addMember <![CDATA[<=]]> 300) THEN
+							5.6 * strength.addMember
+						WHEN (strength.addMember <![CDATA[>]]> 300) THEN
+							6.0 * strength.addMember
+						ELSE
+							0
+						END
+					) + (
+						CASE
+						WHEN (IFNULL(strength.payNum, 0) <![CDATA[<]]> 500) THEN
+							1.0 * IFNULL(strength.payNum, 0)
+						WHEN (500 <![CDATA[<=]]> strength.payNum and strength.payNum <![CDATA[<=]]> 1000) THEN
+							1.3 * strength.payNum
+						WHEN (1001 <![CDATA[<=]]> strength.payNum and strength.payNum<![CDATA[<=]]> 2000) THEN
+							1.6 * strength.payNum
+						WHEN (strength.payNum <![CDATA[>]]> 2000) THEN
+							2.0 * strength.payNum
+						ELSE
+							0
+						END
+					) + (
+						CASE
+						WHEN (IFNULL(strength.game_num, 0) <![CDATA[<]]> 300) THEN
+							1.0 * IFNULL(strength.game_num, 0)
+						WHEN (300 <![CDATA[<=]]> strength.game_num and strength.game_num<![CDATA[<=]]> 500) THEN
+							1.3 * strength.game_num
+						WHEN (501 <![CDATA[<=]]> strength.game_num and strength.game_num<![CDATA[<=]]> 800) THEN
+							1.6 * strength.game_num
+						WHEN (strength.game_num <![CDATA[>]]> 800) THEN
+							2.0 * strength.game_num
+						ELSE
+							0
+						END
+					)
+				) / strength.equ_num
+			) AS strength_value,
+			strength.id,
+			strength.cname,
+			strength.logo,
+			strength.province,
+			strength.address,
+			strength.longitude,
+			strength.latitude
+		FROM
+			(
+				SELECT
+				    t.id,
+					t.cname,
+					t.logo,
+					cp.province,
+					cp.address,
+					cp.longitude,
+					cp.latitude,
+					(
+						SELECT
+							count(*)
+						FROM
+							darts_club_member me
+						WHERE 
+						 DATE_FORMAT( me.create_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+						AND me.cno = t.cno
+					) AS addMember,
+					(
+						SELECT
+							sum(co.amount)
+						FROM
+							darts_commission co
+						WHERE 
+							DATE_FORMAT( co.pay_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+						AND co.cno = t.cno
+					) AS payNum,
+					(
+						SELECT
+							SUM(game_num) AS game_num
+						FROM
+							(
+								SELECT
+									(
+										CASE
+										WHEN go.game_mode = 1 THEN
+											1 * count(*)
+										WHEN go.game_mode = 2 THEN
+											2 * count(*)
+										WHEN go.game_mode = 3 THEN
+											3 * count(*)
+										WHEN go.game_mode = 4 THEN
+											4 * count(*)
+										WHEN go.game_mode = 5 THEN
+											4 * count(*)
+										WHEN go.game_mode = 6 THEN
+											6 * count(*)
+										WHEN go.game_mode = 7 THEN
+											1 * count(*)
+										ELSE
+											0
+										END
+									) AS game_num,
+									go.auth_no
+								FROM
+									darts_game_order go
+								WHERE
+								    DATE_FORMAT( go.order_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+									 and go.`status` = 4 
+								GROUP BY
+									go.game_mode
+							) AS game
+						WHERE
+							game.auth_no = t.cno
+					) AS game_num,
+					(
+						SELECT
+							count(*)
+						FROM
+							darts_equ_auth eq
+						WHERE
+							eq.auth_no = t.cno
+					) AS equ_num
+				FROM
+					darts_club_info t 
+				LEFT JOIN darts_club_place cp ON cp.cno = t.cno
+				where  t.isvalid=1 
+				<if test="province != null and province != ''">
+					AND cp.`province` like concat('%', #{province}, '%') 
+				</if>
+				<if test="acac != null and acac != ''">
+					AND t.`acac` = #{acac}
+				</if>
+			) AS strength )as  ra ORDER BY ra.strength_value DESC ) da,
+						(SELECT @rank := 0) r
+				) AS rk
+		WHERE  1 = 1 and rk.strength_value>0
+    </select>
+    
+</mapper>

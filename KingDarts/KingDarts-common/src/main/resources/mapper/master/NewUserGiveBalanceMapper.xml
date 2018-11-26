@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.NewUserGiveBalanceMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.NewUserGiveBalance">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="give_game_balance" jdbcType="DECIMAL" property="give_game_balance" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="start_time" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="end_time" />
+    <result column="is_publish" jdbcType="BIGINT" property="is_publish" />
+    <result column="isvalid" jdbcType="BIGINT" property="isvalid" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+  </resultMap>
+  
+  <select id="queryNewUserGiveBalanceList" resultType="map">
+        SELECT
+            *
+        FROM darts_newuser_give_balance
+        WHERE 1=1
+            AND isvalid = 1
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY ${orderSql}
+        </if>
+    </select>
+    
+</mapper>

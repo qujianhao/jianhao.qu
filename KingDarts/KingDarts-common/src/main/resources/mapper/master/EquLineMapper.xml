@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.EquLineMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.EquLine">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="equno" jdbcType="VARCHAR" property="equno" />
+    <result column="ip_address" jdbcType="VARCHAR" property="ip_address" />
+    <result column="server_ip_address" jdbcType="VARCHAR" property="server_ip_address" />
+    <result column="isline" jdbcType="INTEGER" property="isline" />
+    <result column="line_time" jdbcType="TIMESTAMP" property="line_time" />
+    <result column="off_time" jdbcType="TIMESTAMP" property="off_time" />
+    <result column="online_times" jdbcType="INTEGER" property="online_times" />
+    <result column="off_type" jdbcType="BIT" property="off_type" />
+  </resultMap>
+
+    <select id="queryEquLineList" resultType="map">
+        SELECT
+            del.`id`, del.`equno`, del.`ip_address`, del.`server_ip_address`,del.isline, del.`line_time`, del.`off_time`, del.`online_times`, del.`off_type`
+        FROM `darts_equ_line` as del
+        <where>
+        	<if test="equno != null and equno != ''"> and del.equno = #{equno}</if>
+        	<if test="isline != null "> and del.isline = #{isline}</if>
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY del.${orderSql}
+        </if>
+    </select>
+</mapper>

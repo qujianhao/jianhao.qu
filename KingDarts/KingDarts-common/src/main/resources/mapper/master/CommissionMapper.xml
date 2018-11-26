@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.CommissionMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Commission">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="lft_pay_id" jdbcType="BIGINT" property="lft_pay_id" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="agno" jdbcType="VARCHAR" property="agno" />
+    <result column="ag_amount" jdbcType="DECIMAL" property="ag_amount" />
+    <result column="cno" jdbcType="VARCHAR" property="cno" />
+    <result column="c_amount" jdbcType="DECIMAL" property="c_amount" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="pay_time" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+
+	<!-- 商户端根据俱乐部查询充值明细 -->
+    <select id="queryClubCommissionList" resultType="map">
+        SELECT
+			dc.amount,date_format(dc.pay_time,'%Y-%c-%d %H:%i:%s') as pay_time, wu.username,wu.nickname
+		FROM
+			darts_commission AS dc
+		LEFT JOIN wt_user AS wu ON wu.uuid = dc.user_id
+		LEFT JOIN darts_club_info AS dci ON dc.cno=dci.cno
+		WHERE
+			1 = 1 and dci.isvalid=1
+		<!-- 俱乐部编号 -->
+		<if test="cno != null and cno != ''">
+            and dc.cno = #{cno}
+        </if>
+        <!-- 支付时间查询 -->
+		<if test="pay_time != null and pay_time != ''">
+            and date_format(dc.pay_time,'%Y-%m')= #{pay_time}
+        </if>
+		<!-- 按国家查询 -->
+        <if test="country != null and country != ''">
+            AND wu.country like concat('%', #{country}, '%')
+        </if>
+        <!-- 按省份查询 -->
+        <if test="province != null and province != ''">
+            AND wu.province like concat('%', #{province}, '%')
+        </if>
+        <!-- 按市级查询 -->
+        <if test="city != null and city != ''">
+            AND wu.city like concat('%', #{city}, '%')
+        </if>
+        <!-- 按区级查询 -->
+        <if test="areas != null and areas != ''">
+            AND wu.areas like concat('%', #{areas}, '%')
+        </if>
+        ORDER BY dc.pay_time desc
+    </select>
+    
+    
+    
+    <!-- 用户端查询充值明细 -->
+    <select id="queryUserCommissionList" resultType="map">
+        SELECT
+			dc.id,dc.lft_pay_id,dc.amount,dc.agno,dc.ag_amount,dc.cno,
+			dc.c_amount,DATE_FORMAT(dc.pay_time,'%Y-%m-%d %H:%i:%s') as pay_time,dc.remark 
+		FROM
+			darts_commission AS dc 
+		WHERE
+			1 = 1 
+		<!-- 俱乐部编号 -->
+		<if test="cno != null and cno != ''">
+            and dc.cno = #{cno}
+        </if>
+        <!-- 支付时间查询 -->
+		<if test="pay_time != null and pay_time != ''">
+            and dc.pay_time = #{pay_time}
+        </if>
+        <!-- 支付状态查询 -->
+        <if test="user_id != null and user_id != ''">
+            and dc.user_id = #{user_id}
+        </if>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dc.${orderSql}
+        </if>
+    </select>
+    
+    <!-- 复购率 -->
+    <select id="getSencondProbability" parameterType="java.lang.String" resultType="java.lang.Float">
+    	SELECT
+		(
+			SELECT
+				count(1)
+			FROM
+				(SELECT count(1) cou 
+				FROM darts_commission 
+				WHERE pay_time>= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+				<!-- 俱乐部编号 -->
+				<if test="cno != null and cno != ''">
+		            and cno = #{cno}
+		        </if>
+		        <!-- 代理商编号 -->
+				<if test="agno != null and agno != ''">
+		            and agno = #{agno}
+		        </if>
+				GROUP BY user_id
+				) AS a
+			WHERE
+				a.cou > 1
+		) / (
+			SELECT
+				count(1)
+			FROM
+				(SELECT count(*) nt
+				 FROM darts_commission
+				 WHERE pay_time>= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+				 <!-- 俱乐部编号 -->
+				 <if test="cno != null and cno != ''">
+		            and cno = #{cno}
+		         </if>
+		         <!-- 代理商编号 -->
+				 <if test="agno != null and agno != ''">
+		            and agno = #{agno}
+		         </if>
+				 GROUP BY user_id
+				) AS b
+			WHERE
+				b.nt > 0
+		) as probability
+    </select>
+    
+    <select id="queryClubCommissionDetailMonth"  resultType="map">
+    select  (@i:=@i+1)   as   row_num,info.* from
+		(
+		SELECT
+			cl.cname,
+			cl.cno,
+			pl.city, 
+			'俱乐部' as type,
+			(
+				SELECT
+					count(*)
+				FROM
+					darts_equ_auth au
+				WHERE
+					au.auth_no = t.cno
+			) as eq_num,
+		  sum(t.c_amount) as month_amount,
+		  sum(t.amount) as month_pay_amount 
+		FROM
+			darts_club_info cl
+		LEFT JOIN   darts_commission t ON t.cno = cl.cno
+		LEFT JOIN darts_club_place pl ON t.cno = pl.cno 
+		where cl.isvalid = 1 
+		<if test="query_month!=null and query_month!=''">
+		and DATE_FORMAT(t.pay_time, '%Y-%m') = #{query_month}
+		</if>
+		GROUP BY
+			t.cno order by cl.cno) info ,(select   @i:=0)   as   it
+    </select>
+    
+    <select id="queryClubCommissionDetailDay"  resultType="map">
+    SELECT
+		(@i :=@i + 1) AS row_num,
+		info.*
+	FROM
+		(
+			SELECT
+				(
+					SELECT
+						sum(t.c_amount) as c_amount_sum
+					FROM
+						darts_commission t
+					WHERE
+						DATE_FORMAT(t.pay_time, '%Y-%m-%d') = #{pay_time} and 
+						t.cno=cl.cno
+				) AS day_amount,
+				(
+					SELECT
+						sum(t.amount) as amount_sum
+					FROM
+						darts_commission t
+					WHERE
+						DATE_FORMAT(t.pay_time, '%Y-%m-%d') = #{pay_time} and 
+						t.cno=cl.cno
+				) AS amount_sum
+			FROM 
+				darts_club_info cl 
+			LEFT JOIN darts_commission t ON t.cno = cl.cno
+			LEFT JOIN darts_club_place pl ON t.cno = pl.cno
+			WHERE
+				cl.isvalid = 1 
+			<if test="query_month!=null and query_month!=''">
+				and DATE_FORMAT(t.pay_time, '%Y-%m') = #{query_month}
+			</if>
+			GROUP BY
+				t.cno
+			ORDER BY
+				cl.cno 
+		) info,
+		(SELECT @i := 0) AS it 
+    </select>
+    
+    <select id="queryClubCommissionPayDetailDay"  resultType="map">
+    SELECT
+		(@i :=@i + 1) AS row_num,
+		info.*
+	FROM
+		(
+			SELECT
+				(
+					SELECT
+						sum(t.amount)
+					FROM
+						darts_commission t
+					WHERE
+						DATE_FORMAT(t.pay_time, '%Y-%m-%d') = #{pay_time} and 
+						t.cno=cl.cno
+				) AS day_amount
+			FROM 
+				darts_club_info cl 
+			LEFT JOIN darts_commission t ON t.cno = cl.cno
+			LEFT JOIN darts_club_place pl ON t.cno = pl.cno
+			WHERE
+				cl.isvalid = 1 
+				<if test="query_month!=null and query_month!=''">
+				  and DATE_FORMAT(t.pay_time, '%Y-%m') = #{query_month}
+			    </if>
+			GROUP BY
+				t.cno
+			ORDER BY
+				cl.cno 
+		) info,
+		(SELECT @i := 0) AS it 
+    </select>
+    
+    
+    
+</mapper>

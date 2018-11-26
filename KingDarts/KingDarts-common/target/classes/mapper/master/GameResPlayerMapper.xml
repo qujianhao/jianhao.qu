@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.GameResPlayerMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.GameResPlayer">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="VARCHAR" property="order_no" />
+    <result column="group_id" jdbcType="TINYINT" property="group_id" />
+    <result column="group_score" jdbcType="INTEGER" property="group_score" />
+    <result column="PPD" jdbcType="DOUBLE" property="PPD" />
+    <result column="PPR" jdbcType="DOUBLE" property="PPR" />
+    <result column="MPR" jdbcType="INTEGER" property="MPR" />
+    <result column="hit_num" jdbcType="INTEGER" property="hit_num" />
+    <result column="player_score" jdbcType="INTEGER" property="player_score" />
+    <result column="player_id" jdbcType="TINYINT" property="player_id" />
+    <result column="player_name" jdbcType="VARCHAR" property="player_name" />
+  </resultMap>
+
+    <select id="queryGameResPlayerList" resultType="map">
+        SELECT
+            dgrp.`id`, dgrp.`order_no`, dgrp.`group_id`, dgrp.`group_score`, dgrp.`PPD`, dgrp.`PPR`, dgrp.`MPR`, dgrp.`hit_num`, dgrp.`player_score`, dgrp.`player_id`, dgrp.`player_name`
+        FROM `darts_game_res_player` as dgrp
+        WHERE 1=1
+            <if test="player_name != null and player_name != ''">
+                AND dgrp.player_name like concat('%', #{player_name}, '%')
+            </if>
+            AND dgrp.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dgrp.${orderSql}
+        </if>
+    </select>
+</mapper>

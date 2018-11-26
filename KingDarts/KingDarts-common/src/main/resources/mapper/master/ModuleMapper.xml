@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.ModuleMapper">
+    <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Module">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="parent" jdbcType="INTEGER" property="parent"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="order_num" jdbcType="INTEGER" property="order_num"/>
+        <result column="is_publish" jdbcType="TINYINT" property="is_publish"/>
+        <result column="is_delete" jdbcType="TINYINT" property="is_delete"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="update_time"/>
+    </resultMap>
+
+    <select id="queryModuleList" resultType="map">
+        SELECT
+        wm.`id`, wm.`name`, wm.`icon`, wm.`url`, wm.`parent`, wm.`code`, wm.`order_num`, wm.`is_publish`,
+        wm.`is_delete`, wm.`update_time`
+        FROM `wt_module` as wm
+        WHERE 1=1
+        <if test="id != null and id != ''">
+            AND wm.parent = #{id}
+        </if>
+        <if test="name != null and name != ''">
+            AND wm.name like concat('%', #{name}, '%')
+        </if>
+        <if test="update_time_start != null and update_time_start != ''">
+            AND wm.update_time >= #{update_time_start}
+        </if>
+        <if test="update_time_end != null and update_time_end != ''">
+            AND wm.#{update_time_end} >= update_time
+        </if>
+        AND wm.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY wm.${orderSql}
+        </if>
+    </select>
+
+    <select id="queryModuleMapList" resultType="map">
+        select t.id, t.`parent` as pId, t.name , IF( (select count(1) from wt_module where parent = t.id) > 0, 1, 0) as
+        isParent
+        from `wt_module` t
+        where t.`is_delete` = 0 and t.`is_publish` = 1
+        <if test="parent != null and parent != ''">
+            AND t.parent = #{parent}
+        </if>
+        order by t.`parent`, t.`order_num`
+    </select>
+
+    <select id="queryModuleMapListByParent" resultType="map">
+        select * from `wt_module` t
+        where t.`is_delete` = 0 and t.`is_publish` = 1
+        <if test="parentId != null and parentId != ''">
+            AND t.parent = #{parentId}
+        </if>
+    </select>
+
+</mapper>

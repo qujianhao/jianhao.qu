@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.UserPointsMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.UserPoints">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="order_id" jdbcType="BIGINT" property="order_id" />
+    <result column="points" jdbcType="INTEGER" property="points" />
+    <result column="points_type" jdbcType="INTEGER" property="points_type" />
+    <result column="log_time" jdbcType="TIMESTAMP" property="log_time" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+
+    <select id="queryUserPointsList" resultType="map">
+        SELECT
+            dup.`id`, dup.`user_id`, dup.`order_id`, dup.`points`,DATE_FORMAT(dup.`log_time`,'%Y-%m-%d %H:%i:%s') as log_time , dup.`remark`
+        FROM `darts_user_points` as dup
+        WHERE 1=1 
+        <if test="user_id != null and user_id != ''">
+            AND dup.user_id = #{user_id}
+        </if>
+           ORDER BY dup.log_time desc
+    </select>
+    
+    <select id="getUserRankByPoints" resultType="map">
+        SELECT
+			rk.*
+		FROM
+			(
+				SELECT
+					t.*,@rank := @rank + 1 AS rank
+				FROM
+					(
+						SELECT
+							sum(d.points) AS points,
+							d.user_id,
+							d.game_type,
+							u.nickname,
+							u.headimgurl
+						FROM
+							darts_user_points d
+						LEFT JOIN wt_user u ON d.user_id = u.uuid
+						WHERE
+						    DATE_FORMAT( log_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+							<if test="country != null and country != ''">
+				                AND u.country = #{country}
+				            </if>
+				            <if test="province != null and province != ''">
+				               AND  u.province like concat('%', #{province}, '%')
+				            </if>
+				            <if test="game_type != null and game_type != ''">
+				                AND d.game_type = #{game_type}
+				            </if>
+							GROUP BY
+								d.user_id
+								<if test="game_type != null and game_type != ''">
+					                ,d.game_type
+					            </if>
+							ORDER BY
+								points DESC
+					) AS t,
+					(SELECT @rank := 0) r
+			) AS rk
+		WHERE
+			1 = 1
+	        <if test="uuid != null and uuid != ''">
+                AND rk.user_id = #{uuid}
+            </if>
+	</select>
+	
+</mapper>

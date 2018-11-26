@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/KingDarts-common/KingDarts-common.iml" filepath="$PROJECT_DIR$/KingDarts-common/KingDarts-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KingDarts-main.iml" filepath="$PROJECT_DIR$/KingDarts-main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KingDarts-server/KingDarts-server.iml" filepath="$PROJECT_DIR$/KingDarts-server/KingDarts-server.iml" />
+    </modules>
+  </component>
+</project>

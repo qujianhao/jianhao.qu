@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.UserBalanceMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.UserBalance">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="log_time" jdbcType="TIMESTAMP" property="log_time" />
+    <result column="order_id" jdbcType="BIGINT" property="order_id" />
+    <result column="pay_id" jdbcType="BIGINT" property="pay_id" />
+    <result column="equno" jdbcType="VARCHAR" property="equno" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="give_balance" jdbcType="DECIMAL" property="give_balance" />
+    <result column="balance_pre" jdbcType="DECIMAL" property="balance_pre" />
+    <result column="give_balance_pre" jdbcType="DECIMAL" property="give_balance_pre" />
+    <result column="coupon_balance" jdbcType="DECIMAL" property="coupon_balance" />
+    <result column="coupon_balance_pre" jdbcType="DECIMAL" property="coupon_balance_pre" />
+  </resultMap>
+
+    <select id="queryUserBalanceList" resultType="map">
+        SELECT
+            dub.`id`, dub.`user_id`, dub.`amount`, dub.`type`, DATE_FORMAT(dub.`log_time`,'%Y-%m-%d %H:%i:%s') as `log_time`, dub.`order_id`, dub.`pay_id`, dub.`equno`, dub.`remark`
+            ,balance,give_balance,coupon_balance
+        FROM `darts_user_balance` as dub
+        WHERE 1=1
+        <if test="user_id != null and user_id != ''">
+            AND dub.user_id = #{user_id}
+        </if>
+        <if test="type != null and type != ''">
+            AND dub.type = #{type}
+        </if>
+        ORDER BY dub.log_time
+        <if test="orderSql != null and orderSql != ''">
+            ,dub.${orderSql}
+        </if>
+         desc
+    </select>
+    
+    <!-- 查询俱乐部用户消费明细 -->
+    <select id="queryUserConsumptionDetails" resultType="map">
+    	SELECT
+			dgo.cost AS amount,
+			date_format(
+				dgo.end_time,
+				'%Y-%c-%d %H:%i:%s'
+			) AS log_time,
+			wu.username,
+			wu.nickname
+		FROM
+			darts_game_order AS dgo
+		LEFT JOIN darts_club_info AS dci ON dgo.auth_no = dci.cno
+		LEFT JOIN wt_user AS wu ON wu.uuid = dgo.user_id
+		WHERE
+			1 = 1
+		AND dci.isvalid = 1
+		AND dgo. `STATUS` = 4
+		<!-- 俱乐部编号 -->
+		<if test="cno != null and cno != ''">
+            and dci.cno = #{cno}
+        </if>
+		<!-- 消费时间查询 -->
+		<if test="log_time != null and log_time != ''">
+            and date_format(dgo.end_time,'%Y-%m')= #{log_time}
+        </if>
+		<!-- 按国家查询 -->
+        <if test="country != null and country != ''">
+            AND wu.country like concat('%', #{country}, '%')
+        </if>
+        <!-- 按省份查询 -->
+        <if test="province != null and province != ''">
+            AND wu.province like concat('%', #{province}, '%')
+        </if>
+        <!-- 按市级查询 -->
+        <if test="city != null and city != ''">
+            AND wu.city like concat('%', #{city}, '%')
+        </if>
+        <!-- 按区级查询 -->
+        <if test="areas != null and areas != ''">
+            AND wu.areas like concat('%', #{areas}, '%')
+        </if>
+        ORDER BY log_time desc
+    </select>
+    
+    <select id="getUserBalanceCount" resultType="Float">
+        SELECT
+            sum(abs(dub.amount)) 
+        FROM `darts_user_balance` as dub
+        WHERE 1=1  and 0 >dub.amount 
+        <if test="user_id != null and user_id != ''">
+            AND dub.user_id = #{user_id}
+        </if>
+        <if test="type != null and type != ''">
+            AND dub.type = #{type}
+        </if>
+        <if test="log_time_start != null and log_time_start != ''">
+            AND dub.log_time >= #{log_time_start}
+        </if>
+        <if test="log_time_end != null and log_time_end != ''">
+            AND #{log_time_end} >= dub.log_time 
+        </if>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dub.${orderSql}
+        </if>
+    </select>
+    
+</mapper>

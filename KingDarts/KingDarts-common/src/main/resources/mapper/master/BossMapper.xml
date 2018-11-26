@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.BossMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Boss">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="bno" jdbcType="VARCHAR" property="bno" />
+    <result column="bname" jdbcType="VARCHAR" property="bname" />
+    <result column="bvolume" jdbcType="BIGINT" property="bvolume" />
+    <result column="is_use" jdbcType="TINYINT" property="is_use" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+  </resultMap>
+
+    <select id="queryBossList" resultType="map">
+        SELECT
+            db.`id`, db.`bno`, db.`bname`, db.`bvolume`, db.`is_use`, db.`is_delete`, db.`create_time`
+        FROM `darts_boss` as db
+        WHERE 1=1
+            <if test="bname != null and bname != ''">
+                AND db.bname like concat('%', #{bname}, '%')
+            </if>
+            AND db.is_delete = 0
+            ORDER BY db.create_time desc 
+    </select>
+    
+    <update id="updateBossIsNotUse">
+      update darts_boss set  is_use=0
+    </update>
+    
+</mapper>

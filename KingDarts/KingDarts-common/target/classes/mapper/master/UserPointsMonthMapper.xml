@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.UserPointsMonthMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.UserPointsMonth">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="game_type" jdbcType="VARCHAR" property="game_type" />
+    <result column="game_code" jdbcType="VARCHAR" property="game_code" />
+    <result column="rank_time" jdbcType="VARCHAR" property="rank_time" />
+    <result column="points" jdbcType="BIGINT" property="points" />
+  </resultMap>
+
+    <select id="queryUserPointsMonthList" resultType="map">
+        SELECT
+            dupm.`id`, dupm.`user_id`, dupm.`game_type`, dupm.`game_code`, dupm.`rank_time`, dupm.`points`
+        FROM `darts_user_points_month` as dupm
+        WHERE 1=1
+            AND dupm.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dupm.${orderSql}
+        </if>
+    </select>
+	
+	<select id="getUserRankByHistoryPoints" resultType="map">
+		SELECT
+			rk.*
+		FROM
+			(
+				SELECT
+					t.*,@rank := @rank + 1 AS rank
+				FROM
+					(
+						SELECT
+							sum(d.points) AS points,
+							d.user_id,
+							d.game_type,
+							u.nickname,
+							u.headimgurl
+						FROM
+							darts_user_points_month d
+						LEFT JOIN wt_user u ON d.user_id = u.uuid
+						WHERE 1=1 
+							<if test="country != null and country != ''">
+				                AND u.country = #{country}
+				            </if>
+				            <if test="province != null and province != ''">
+				               AND  u.province = #{province}
+				            </if>
+				            <if test="game_type != null and game_type != ''">
+				                AND d.game_type = #{game_type}
+				            </if>
+				            <if test="rank_time != null and rank_time != ''">
+				                AND d.rank_time = #{rank_time}
+				            </if>
+							GROUP BY
+								d.user_id
+								<if test="game_type != null and game_type != ''">
+					                ,d.game_type
+					            </if>
+							ORDER BY
+								points DESC
+					) AS t,
+					(SELECT @rank := 0) r
+			) AS rk
+		WHERE
+			1 = 1
+	        <if test="uuid != null and uuid != ''">
+                AND rk.user_id = #{uuid}
+            </if>
+	</select>
+	
+	<insert id="insertUserPointsMonth"  parameterType="java.util.Map">
+	INSERT INTO darts_user_points_month SELECT
+		0 AS id,
+		d.user_id,
+		d.game_type,
+		NULL AS game_code,
+		#{rank_time} AS rank_time,
+		sum(d.points) AS points
+	FROM
+		darts_user_points d
+	WHERE
+		d.log_time like concat(#{rank_time}, '%')
+	GROUP BY
+		d.user_id,
+		d.game_type
+	</insert>
+	
+</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.ChallengeMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.results.core.ChallengeResult">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sponsor_id" jdbcType="INTEGER" property="sponsor_id" />
+    <result column="sponsor_useraccount" jdbcType="VARCHAR" property="sponsor_useraccount" />
+    <result column="sponsor_nickname" jdbcType="VARCHAR" property="sponsor_nickname" />
+    <result column="sponsor_headimg" jdbcType="VARCHAR" property="sponsor_headimg" />
+    <result column="receiver_id" jdbcType="INTEGER" property="receiver_id" />
+    <result column="receiver_useraccount" jdbcType="VARCHAR" property="receiver_useraccount" />
+    <result column="receiver_nickname" jdbcType="VARCHAR" property="receiver_nickname" />
+    <result column="receiver_headimg" jdbcType="VARCHAR" property="receiver_headimg" />
+    <result column="game_type_id" jdbcType="VARCHAR" property="game_type_id" />
+    <result column="game_type_value" jdbcType="VARCHAR" property="game_type_value" />
+    <result column="game_name" jdbcType="VARCHAR" property="game_name" />
+    <result column="club_id" jdbcType="INTEGER" property="club_id" />
+    <result column="club_cno" jdbcType="VARCHAR" property="club_cno" />
+    <result column="club_name" jdbcType="VARCHAR" property="club_name" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="start_time" />
+    <result column="float_time" jdbcType="INTEGER" property="float_time" />
+    <result column="receive_status" jdbcType="TINYINT" property="receive_status" />
+    <result column="challenge_status" jdbcType="TINYINT" property="challenge_status" />
+    <result column="sponsor_miss" jdbcType="VARCHAR" property="sponsor_miss" />
+    <result column="receiver_miss" jdbcType="VARCHAR" property="receiver_miss" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+  </resultMap>
+
+    <select id="queryChallengeList" resultType="map">
+        SELECT * FROM `darts_challenge` as dc
+        <where>
+            <if test="sponsor_nickname != null and sponsor_nickname != ''">
+                AND dc.sponsor_nickname like concat('%', #{sponsor_nickname}, '%')
+            </if>
+            <if test="receiver_nickname != null and receiver_nickname != ''">
+                AND dc.receiver_nickname like concat('%', #{receiver_nickname}, '%')
+            </if>
+            <if test="game_name != null and game_name != ''">
+                AND dc.game_name like concat('%', #{game_name}, '%')
+            </if>
+            <if test="club_name != null and club_name != ''">
+                AND dc.club_name like concat('%', #{club_name}, '%')
+            </if>
+            <if test="challenge_status != null">
+                AND dc.challenge_status = #{challenge_status}
+            </if>
+            <if test="statuses != null">
+				and dc.challenge_status in (<foreach collection="statuses" index="index" separator="," item="item" >#{item}</foreach>)
+			</if>
+		
+            <if test="time_end != null">
+                AND start_time &lt;= #{time_end}
+            </if>
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dc.${orderSql}
+        </if>
+    </select>
+    
+	
+	<select id="findAllList" resultMap="BaseResultMap">
+		SELECT  dc.id,dc.start_time ,dc.float_time ,dc.game_type_id,dc.game_type_value 
+		,dc.sponsor_useraccount,dc.receiver_useraccount,challenge_status,sponsor_miss,receiver_miss,sponsor_win
+		,dc.receive_status ,sponsor_order_no,receiver_order_no
+		, wu.nickname sponsor_nickname , wu.headimgurl sponsor_headimg
+		 ,wu1.nickname receiver_nickname , wu1.headimgurl receiver_headimg
+		FROM darts_challenge dc INNER JOIN wt_user wu ON dc.sponsor_useraccount = wu.uuid
+		INNER JOIN wt_user wu1 ON dc.receiver_useraccount = wu1.uuid
+		WHERE sponsor_useraccount = #{sponsor_useraccount} 
+		OR    receiver_useraccount = #{sponsor_useraccount}
+		ORDER BY create_time desc, id asc
+	</select>
+	
+	<select id="findSponsorChallengeList" resultMap="BaseResultMap">
+		SELECT  dc.id,dc.start_time ,dc.float_time ,dc.game_type_id,dc.game_type_value ,dc.sponsor_useraccount,challenge_status,sponsor_miss,receiver_miss
+		, wu.nickname sponsor_nickname , wu.headimgurl sponsor_headimg
+		,dc.receiver_useraccount ,wu1.nickname receiver_nickname , wu1.headimgurl receiver_headimg
+		FROM darts_challenge dc INNER JOIN wt_user wu ON dc.sponsor_useraccount = wu.uuid
+		INNER JOIN wt_user wu1 ON dc.receiver_useraccount = wu1.uuid
+		WHERE sponsor_useraccount = #{sponsor_useraccount}
+		ORDER BY create_time desc, id asc
+	</select>
+	
+	<select id="findReceiverChallengeList" resultMap="BaseResultMap">
+	SELECT  dc.id,dc.start_time ,dc.float_time ,dc.game_type_id,dc.game_type_value ,dc.sponsor_useraccount, wu.nickname sponsor_nickname , wu.headimgurl sponsor_headimg
+		FROM darts_challenge dc INNER JOIN wt_user wu ON dc.sponsor_useraccount = wu.uuid
+		WHERE receiver_useraccount = #{receiver_useraccount} 
+		AND   receive_status = 1			<!-- 还未设置状态 -->
+		AND   challenge_status = 1			<!-- 还未设置 -->
+		ORDER BY dc.create_time desc, id asc
+	</select>
+	
+	<update id="updateSponsorMiss">
+		UPDATE darts_challenge SET sponsor_miss = 'Y'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateReceiverMiss">
+		UPDATE darts_challenge SET receiver_miss = 'Y'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateReceiveStatus">
+		UPDATE darts_challenge SET receive_status = #{receiveStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateChallengeStatus">
+		UPDATE darts_challenge SET challenge_status = 5		<!-- 设置为过期 -->
+		WHERE id = #{id}
+	</update>
+	
+	<select id="queryMissTimes" resultType="integer">
+		select distinct
+			ifnull((
+				select count(sponsor_miss) from darts_challenge d1
+				where d1.sponsor_useraccount = #{userId}
+				and   d1.receive_status = 3
+				and   unix_timestamp(now()) between unix_timestamp(#{startDate}) and unix_timestamp(#{endDate})
+				and   d1.sponsor_miss = 'Y'
+				group by d1.sponsor_id
+			), 0) + 
+			ifnull((
+				select count(receiver_miss) from darts_challenge d2
+				where d2.receiver_useraccount = #{userId}
+				and   d2.receive_status = 3
+				and   unix_timestamp(now()) between unix_timestamp(#{startDate}) and unix_timestamp(#{endDate})
+				and   d2.receiver_miss = 'Y'
+				group by d2.sponsor_id
+			), 0)
+		from darts_challenge d3
+		
+	</select>
+	
+	<select id="queryChallenge" resultMap="BaseResultMap">
+		select *
+		from darts_challenge
+		where id = #{id}
+	</select>
+</mapper>

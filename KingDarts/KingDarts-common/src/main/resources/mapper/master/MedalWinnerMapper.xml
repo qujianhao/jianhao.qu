@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.MedalWinnerMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.MedalWinner">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="useraccount" jdbcType="VARCHAR" property="useraccount" />
+    <result column="medal_id" jdbcType="INTEGER" property="medal_id" />
+    <result column="medal_name" jdbcType="VARCHAR" property="medal_name" />
+    <result column="medal_url" jdbcType="VARCHAR" property="medal_url" />
+    <result column="prize_point" jdbcType="INTEGER" property="prize_point" />
+    <result column="is_receive" jdbcType="INTEGER" property="is_receive" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+  </resultMap>
+
+    <select id="queryMedalWinnerList" resultType="map">
+        SELECT
+            dmw.`id`, dmw.`user_id`, dmw.`useraccount`, dmw.`medal_id`, dm.`medal_name`,dm.`medal_desc`,dm.`complete_times`,dm.`medal_url`,
+             dmw.`prize_point`,dmw.`is_receive`,dmw.`create_time`
+        FROM `darts_medal_winner` as dmw left join `darts_medal` as  dm on dm.`id`=dmw.`medal_id` 
+        WHERE 1=1
+            <if test="medal_name != null and medal_name != ''">
+                AND dmw.medal_name like concat('%', #{medal_name}, '%')
+            </if>
+            <if test="user_id != null and user_id != ''">
+                AND dmw.user_id = #{user_id}
+            </if>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dmw.${orderSql}
+        </if>
+    </select>
+    
+</mapper>

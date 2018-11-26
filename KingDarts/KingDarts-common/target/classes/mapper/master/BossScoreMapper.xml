@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.BossScoreMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.BossScore">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="VARCHAR" property="order_no" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="boss_id" jdbcType="VARCHAR" property="boss_id" />
+    <result column="total_score" jdbcType="INTEGER" property="total_score" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+  </resultMap>
+
+    <select id="queryBossScoreList" resultType="map">
+        SELECT
+            dbs.`id`, dbs.`order_no`, dbs.`user_id`, dbs.`boss_id`, dbs.`total_score`, dbs.`create_time`
+        FROM `darts_boss_score` as dbs
+        WHERE 1=1
+            <if test="user_id != null and user_id != ''">
+                AND dbs.user_id = #{user_id}
+            </if>
+            <if test="boss_id != null and boss_id != ''">
+                AND dbs.boss_id = #{boss_id}
+            </if>
+            <if test="boss_id != null and boss_id != ''">
+                AND dbs.boss_id = #{boss_id}
+            </if>
+            <if test="create_time != null and create_time != ''">
+                AND dbs.create_time = #{create_time}
+            </if>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dbs.${orderSql}
+        </if>
+    </select>
+    
+    <select id="getBossScoreRankList"  resultType="map">
+       SELECT
+			rk.*, wu.nickname
+		FROM
+			(
+				SELECT
+					t.*,@rank := @rank + 1 AS rank
+				FROM
+					(
+						SELECT
+							SUM(bs.total_score) AS score,
+							bs.user_id
+						FROM
+							darts_boss_score bs
+						WHERE
+							1 = 1
+					        <if test="user_id != null and user_id != ''">
+						        AND bs.user_id = #{user_id}
+						    </if>
+						    <if test="boss_id != null and boss_id != ''">
+						        AND bs.boss_id = #{boss_id}
+						    </if>
+						GROUP BY
+							bs.user_id
+						ORDER BY
+							score DESC
+					) AS t,
+					(SELECT @rank := 0) r
+			) AS rk
+		LEFT JOIN wt_user AS wu ON rk.user_id = wu.uuid
+		WHERE
+			1 = 1 
+    </select>
+</mapper>

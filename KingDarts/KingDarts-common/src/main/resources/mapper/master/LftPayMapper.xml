@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.LftPayMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.LftPay">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="open_id" jdbcType="VARCHAR" property="open_id" />
+    <result column="merchant_no" jdbcType="VARCHAR" property="merchant_no" />
+    <result column="channel_type" jdbcType="VARCHAR" property="channel_type" />
+    <result column="out_trade_no" jdbcType="VARCHAR" property="out_trade_no" />
+    <result column="trade_no" jdbcType="VARCHAR" property="trade_no" />
+    <result column="total_amount" jdbcType="FLOAT" property="total_amount" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="spbill_create_ip" jdbcType="VARCHAR" property="spbill_create_ip" />
+    <result column="fee_type" jdbcType="VARCHAR" property="fee_type" />
+    <result column="operator_id" jdbcType="VARCHAR" property="operator_id" />
+    <result column="store_id" jdbcType="VARCHAR" property="store_id" />
+    <result column="device_info" jdbcType="VARCHAR" property="device_info" />
+    <result column="time_start	" jdbcType="TIMESTAMP" property="time_start	" />
+    <result column="time_expire" jdbcType="TIMESTAMP" property="time_expire" />
+    <result column="limit_pay" jdbcType="VARCHAR" property="limit_pay" />
+    <result column="notify_url" jdbcType="VARCHAR" property="notify_url" />
+    <result column="sub_appid" jdbcType="VARCHAR" property="sub_appid" />
+    <result column="attach" jdbcType="VARCHAR" property="attach" />
+    <result column="goods_tag" jdbcType="VARCHAR" property="goods_tag" />
+    <result column="goods_detail" jdbcType="VARCHAR" property="goods_detail" />
+    <result column="alipay_store_id" jdbcType="VARCHAR" property="alipay_store_id" />
+    <result column="discountable_amount" jdbcType="VARCHAR" property="discountable_amount" />
+    <result column="undiscountable_amount" jdbcType="VARCHAR" property="undiscountable_amount" />
+    <result column="sign" jdbcType="VARCHAR" property="sign" />
+    <result column="body" jdbcType="VARCHAR" property="body" />
+    <result column="pay_status" jdbcType="INTEGER" property="pay_status" />
+    <result column="isvalid" jdbcType="BIT" property="isvalid" />
+    <result column="cardno" jdbcType="VARCHAR" property="cardno" />
+    <result column="game_balance" jdbcType="FLOAT" property="game_balance" />
+    <result column="give_game_balance" jdbcType="FLOAT" property="give_game_balance" />
+    <result column="order_no" jdbcType="VARCHAR" property="order_no" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+  </resultMap>
+  
+  <update id="updateLftPayOutTradeNoAndTradeNo" parameterType="com.wangtiansoft.KingDarts.persistence.entity.LftPay">
+  	update darts_lft_pay
+  	<set>
+	      <trim prefix="" suffix="" suffixOverrides=",">
+	         <if test="pay_status!=null">pay_status=#{pay_status},</if>
+	         <if test="time_expire!=null">time_expire=#{time_expire},</if>
+	         <if test="update_time!=null">update_time=#{update_time},</if>
+         </trim>
+      </set>
+  	where 1=1
+	  	<if test="out_trade_no != null and out_trade_no != ''">
+	        AND out_trade_no = #{out_trade_no}
+	    </if>
+	    <if test="trade_no != null and trade_no != ''">
+	        AND trade_no = #{trade_no}
+	    </if>
+	    <if test="merchant_no != null and merchant_no != ''">
+	        AND merchant_no = #{merchant_no}
+	    </if>
+  </update>
+
+</mapper>

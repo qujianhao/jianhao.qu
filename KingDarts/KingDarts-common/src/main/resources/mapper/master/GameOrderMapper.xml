@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.GameOrderMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.GameOrder">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="VARCHAR" property="order_no" />
+    <result column="order_type" jdbcType="INTEGER" property="order_type" />
+    <result column="game_code" jdbcType="VARCHAR" property="game_code" />
+    <result column="user_id" jdbcType="VARCHAR" property="user_id" />
+    <result column="cno" jdbcType="VARCHAR" property="cno" />
+    <result column="equno" jdbcType="VARCHAR" property="equno" />
+    <result column="cardinfo" jdbcType="VARCHAR" property="cardinfo" />
+    <result column="cardno" jdbcType="VARCHAR" property="cardno" />
+    <result column="order_time" jdbcType="TIMESTAMP" property="order_time" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="start_time" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="end_time" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="pay_status" jdbcType="INTEGER" property="pay_status" />
+    <result column="pay_way" jdbcType="INTEGER" property="pay_way" />
+  </resultMap>
+
+    <select id="queryGameOrderList" resultType="map">
+        SELECT
+            dgo.`id`, dgo.`order_no`, dgo.`order_type`, dgo.`game_code`, dgo.`user_id`, dgo.`cno`, dgo.`equno`, dgo.`cardinfo`, dgo.`cardno`, dgo.`order_time`, dgo.`start_time`, dgo.`end_time`, dgo.`status`, dgo.`pay_status`, dgo.`pay_way`
+        FROM `darts_game_order` as dgo
+        WHERE 1=1
+            AND dgo.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dgo.${orderSql}
+        </if>
+    </select>
+    
+    
+    <select id="queryGameCount" resultType="map">
+        select count(1) num,dgo.equno ,dgo.auth_no,dci.cname
+		from darts_game_order dgo 
+		INNER JOIN darts_club_info dci ON dci.cno = dgo.auth_no
+        <where>
+        	<if test="equno != null and equno != ''">
+                AND dgo.equno like concat('%', #{equno}, '%')
+            </if>
+        	<if test="auth_no != null and auth_no != ''">
+                AND dgo.auth_no like concat('%', #{auth_no}, '%')
+            </if>
+        	<if test="cname != null and cname != ''">
+                AND dci.cname like concat('%', #{cname}, '%')
+            </if>
+        	<if test="status != null and status != ''">
+                AND dgo.status = #{status}
+            </if>
+            <if test="order_time_start != null and order_time_start != ''">
+                AND dgo.order_time &gt;= #{order_time_start}
+            </if>
+            <if test="order_time_end != null and order_time_end != ''">
+                AND dgo.order_time &lt;= #{order_time_end}
+            </if>
+        </where>
+        GROUP BY dgo.equno,dgo.auth_no
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dgo.${orderSql}
+        </if>
+    </select>
+    
+    <select id="queryGameTypeCount" resultType="map">
+        select count(1) num,dgo.equno ,dgo.auth_no ,dgo.game_type ,wd.dict_value game_type_name
+		from darts_game_order dgo INNER JOIN wt_dict wd ON dgo.game_type = wd.dict_key and wd.group_key = 'game_type'
+		<where>
+        	<if test="equno != null and equno != ''">
+                AND dgo.equno = #{equno}
+            </if>
+        	<if test="auth_no != null and auth_no != ''">
+                AND dgo.auth_no = #{auth_no}
+            </if>
+        	<if test="status != null and status != ''">
+                AND dgo.status = #{status}
+            </if>
+            <if test="order_time_start != null and order_time_start != ''">
+                AND dgo.order_time &gt;= #{order_time_start}
+            </if>
+            <if test="order_time_end != null and order_time_end != ''">
+                AND dgo.order_time &lt;= #{order_time_end}
+            </if>
+        </where>
+		GROUP BY dgo.game_type
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dgo.${orderSql}
+        </if>
+    </select>
+    
+    
+</mapper>

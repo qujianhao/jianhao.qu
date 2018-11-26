@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.MerchantWdcashMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.MerchantWdcash">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="merno" jdbcType="VARCHAR" property="merno" />
+    <result column="meraccount" jdbcType="VARCHAR" property="meraccount" />
+    <result column="mer_type" jdbcType="BIT" property="mer_type" />
+    <result column="me_rmobile" jdbcType="VARCHAR" property="me_rmobile" />
+    <result column="cash_nums" jdbcType="DECIMAL" property="cash_nums" />
+    <result column="apply_time" jdbcType="TIMESTAMP" property="apply_time" />
+    <result column="wd_memos" jdbcType="VARCHAR" property="wd_memos" />
+    <result column="wd_status" jdbcType="BIT" property="wd_status" />
+    <result column="pay_types" jdbcType="BIT" property="pay_types" />
+    <result column="paysuces_time" jdbcType="TIMESTAMP" property="paysuces_time" />
+    <result column="account_name" jdbcType="VARCHAR" property="account_name" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="acouunt_no" jdbcType="VARCHAR" property="acouunt_no" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bank_name" />
+    <result column="pay_order_no" jdbcType="VARCHAR" property="pay_order_no" />
+    <result column="fail_reseaon" jdbcType="VARCHAR" property="fail_reseaon" />
+  </resultMap>
+
+    <select id="queryMerchantWdcashList" resultType="map">
+        SELECT  *
+        FROM darts_merchant_wdcash as dmw
+        <where>
+            <if test="pay_order_no != null and pay_order_no != ''">
+                AND dmw.pay_order_no like concat('%', #{pay_order_no}, '%')
+            </if>
+            <if test="wd_status != null and  wd_status != ''">
+                AND dmw.wd_status = #{wd_status}
+            </if>
+            <if test="apply_time_start != null and apply_time_start != '' ">and dmw.apply_time  &gt;=  str_to_date(CONCAT(#{apply_time_start},' 00:00:00'), '%Y-%m-%d %H:%i:%s') </if>
+            <if test="apply_time_end != null and apply_time_end != '' ">and dmw.apply_time  &lt;=  str_to_date(CONCAT(#{apply_time_end},' 23:59:59'), '%Y-%m-%d %H:%i:%s') </if>
+        </where>
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dmw.${orderSql}
+        </if>
+    </select>
+</mapper>

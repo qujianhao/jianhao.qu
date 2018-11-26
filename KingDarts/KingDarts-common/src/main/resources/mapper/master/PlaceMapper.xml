@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.PlaceMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Place">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="placeno" jdbcType="VARCHAR" property="placeno" />
+    <result column="place_name" jdbcType="VARCHAR" property="place_name" />
+    <result column="consdes" jdbcType="VARCHAR" property="consdes" />
+    <result column="cno" jdbcType="VARCHAR" property="cno" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="synopsis" jdbcType="VARCHAR" property="synopsis" />
+    <result column="detailurl" jdbcType="VARCHAR" property="detailurl" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="areas" jdbcType="VARCHAR" property="areas" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="lnglat" jdbcType="VARCHAR" property="lnglat" />
+    <result column="longitude" jdbcType="DECIMAL" property="longitude" />
+    <result column="latitude" jdbcType="DECIMAL" property="latitude" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="add_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="isvalid" jdbcType="BIT" property="isvalid" />
+    <result column="pcaptain" jdbcType="VARCHAR" property="pcaptain" />
+    <result column="pcardid" jdbcType="VARCHAR" property="pcardid" />
+    <result column="pmobile" jdbcType="VARCHAR" property="pmobile" />
+    <result column="ptelno" jdbcType="VARCHAR" property="ptelno" />
+    <result column="pemail" jdbcType="VARCHAR" property="pemail" />
+    <result column="pqq" jdbcType="VARCHAR" property="pqq" />
+    <result column="businesshour" jdbcType="VARCHAR" property="businesshour" />
+    <result column="commnets" jdbcType="INTEGER" property="commnets" />
+    <result column="details" jdbcType="LONGVARCHAR" property="details" />
+  </resultMap>
+
+    <select id="queryPlaceList" resultType="map">
+        SELECT
+            dp.`id`, dp.`placeno`, dp.`place_name`, dp.`consdes`, dp.`cno`, dp.`logo`, dp.`synopsis`, dp.`details`, dp.`detailurl`, dp.`country`, dp.`province`, dp.`city`, dp.`areas`, dp.`address`, dp.`lnglat`, dp.`longitude`, dp.`latitude`, dp.`add_time`, dp.`update_time`, dp.`isvalid`, dp.`pcaptain`, dp.`pcardid`, dp.`pmobile`, dp.`ptelno`, dp.`pemail`, dp.`pqq`, dp.`businesshour`, dp.`commnets`
+        FROM `darts_place` as dp
+        WHERE 1=1
+            <if test="place_name != null and place_name != ''">
+                AND dp.place_name like concat('%', #{place_name}, '%')
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dp.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dp.#{update_time_end} >= update_time
+            </if>
+            AND dp.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dp.${orderSql}
+        </if>
+    </select>
+</mapper>

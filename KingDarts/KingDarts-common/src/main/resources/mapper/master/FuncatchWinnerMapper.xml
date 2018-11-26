@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.FuncatchWinnerMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.FuncatchWinner">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="INTEGER" property="user_id" />
+    <result column="useraccount" jdbcType="VARCHAR" property="useraccount" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="headimg" jdbcType="VARCHAR" property="headimg" />
+    <result column="prize_id" jdbcType="INTEGER" property="prize_id" />
+    <result column="prize_name" jdbcType="VARCHAR" property="prize_name" />
+    <result column="is_deliver" jdbcType="TINYINT" property="is_deliver" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="receive_name" jdbcType="VARCHAR" property="receive_name" />
+    <result column="receive_phone" jdbcType="VARCHAR" property="receive_phone" />
+    <result column="receive_address" jdbcType="VARCHAR" property="receive_address" />
+    <result column="is_top" jdbcType="TINYINT" property="is_top" />
+  </resultMap>
+
+    <select id="queryFuncatchWinnerList" resultType="map">
+        SELECT
+            dfw.`id`, dfw.`user_id`, dfw.`useraccount`, dfw.`username`, dfw.`headimg`, dfw.`prize_id`, dfw.`prize_name`,
+            df.`is_physical`, dfw.`is_deliver`, dfw.`is_delete`, DATE_FORMAT(dfw.`create_time`,'%Y-%m-%d %H:%i:%s') as `create_time`,
+            dfw.`update_time`,dfw.`receive_name`,dfw.`receive_phone`,
+            dfw.`receive_address`,dfw.`is_top` 
+        FROM `darts_funcatch_winner` as dfw left join `darts_funcatch_prize` as df on df.`prize_id`= dfw.`prize_id` 
+        WHERE 1=1 
+            <if test="user_id != null and user_id != ''">
+                AND dfw.user_id = #{user_id} 
+            </if>
+            <if test="username != null and username != ''">
+                AND dfw.username like concat('%', #{username}, '%')
+            </if>
+            <if test="is_deliver != null and is_deliver !=''">
+                AND dfw.is_deliver = #{is_deliver}
+            </if>
+            <if test="prize_id != null and prize_id != ''">
+                AND dfw.prize_id = #{prize_id} 
+            </if>
+            <if test="is_physical != null and is_physical != ''">
+                AND df.is_physical = #{is_physical} 
+            </if>
+            <if test="prize_name != null and prize_name != ''">
+                AND dfw.prize_name like concat('%', #{prize_name}, '%')
+            </if>
+            <if test="is_top != null and is_top !=''">
+                AND dfw.is_top = #{is_top}
+            </if>
+            AND dfw.is_delete = 0  ORDER BY dfw.`create_time` desc
+    </select>
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.SequenceMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.Sequence">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="value" jdbcType="INTEGER" property="value" />
+    <result column="next" jdbcType="INTEGER" property="next" />
+  </resultMap>
+  
+  <select id="getCurrNum" resultType="int">
+	SELECT
+	  value
+	from darts_sequence
+	where name = #{name}
+  </select>
+	
+  <update id="updateSeq">
+	UPDATE darts_sequence SET 
+		value = #{nextNum}
+	WHERE name = #{name}
+  </update>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.SigninSetMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.SigninSet">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="SMALLINT" property="id" />
+    <result column="signin_day" jdbcType="SMALLINT" property="signin_day" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="point" jdbcType="INTEGER" property="point" />
+    <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+    <result column="is_publish" jdbcType="TINYINT" property="is_publish" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+  </resultMap>
+
+    <select id="querySigninSetList" resultType="map">
+        SELECT
+            dss.`id`, dss.`signin_day`, dss.`name`, dss.`point`, dss.`is_delete`, dss.`is_publish`, dss.`create_time`, dss.`update_time`
+        FROM `darts_signin_set` as dss
+        WHERE 1=1
+            <if test="name != null and name != ''">
+                AND dss.name like concat('%', #{name}, '%')
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dss.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dss.#{update_time_end} >= update_time
+            </if>
+            AND dss.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dss.${orderSql}
+        </if>
+    </select>
+</mapper>
