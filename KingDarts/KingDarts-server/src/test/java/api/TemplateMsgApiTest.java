@@ -13,6 +13,8 @@ import com.jfinal.weixin.sdk.api.TemplateMsgApi;
  */
 public class TemplateMsgApiTest {
 
+	
+	//sssssss
     public static void main(String[] args) {
         // 模板消息，发送测试：pass
 //    	https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1433751277
