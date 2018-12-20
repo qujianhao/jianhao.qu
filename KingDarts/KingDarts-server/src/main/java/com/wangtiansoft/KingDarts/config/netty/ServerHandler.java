@@ -137,6 +137,15 @@ public class ServerHandler extends SimpleChannelInboundHandler<String>{
 					result.setType(Constants.message_type_hit);
 					result.setRequestId(message.getRequestId());
 					ctx.channel().writeAndFlush(JSON.toJSONString(result)+"\n"); 
+				}else if(Constants.message_type_packets.equals(message.getType())){
+					
+				//红包上传二维码
+					result = gameClientService.pushPacketsUrl((Map)message.getData(),(SocketChannel)ctx.channel());
+					result.setType(Constants.message_type_packets);
+					result.setRequestId(message.getRequestId());
+					ctx.channel().writeAndFlush(JSON.toJSONString(result)+"\n"); 	
+					
+					
 				}else{
 					if(Constants.code_MessageError.equals(message.getCode())){
 						log.info(msg+",消息格式错误");

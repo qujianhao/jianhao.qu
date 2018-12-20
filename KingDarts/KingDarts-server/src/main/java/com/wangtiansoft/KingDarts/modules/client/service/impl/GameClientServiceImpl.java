@@ -3,10 +3,12 @@ package com.wangtiansoft.KingDarts.modules.client.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -194,7 +196,7 @@ public class GameClientServiceImpl extends BaseService implements GameClientServ
 					throw new AppRuntimeException(Constants.kCode_OrderStatusFail,"订单状态错误");
 				}
 				if(!gameOrder.getPay_status().toString().equals(Constants.gorder_paystatus_haspay+"")){
-					throw new AppRuntimeException(Constants.kCode_OrderPayStatusFail,"订单支付状态错误");
+					throw new AppRuntimeException(Constants.kCode_OrderPayStatusFail,"订单支付 错误");
 				}
 
 				//如果游戏是网络对账，自动匹配
@@ -452,4 +454,53 @@ public class GameClientServiceImpl extends BaseService implements GameClientServ
 		return JSON.toJSONString(map);
 	}
 
+
+//	@Override
+//	红包接口
+//
+
+		@Override
+		public NettyMessage pushPacketsUrl(final Map params,final SocketChannel channel){
+			final String id = channel.id().asShortText();
+			NettyMessage result = this.buildAuthResponse(id,new IEResponseHandler() {
+				@Override
+				public Object execute(String equno) throws Exception {
+					
+					/*if(!"K2160100108".equals(equno)&&!"K2160100588".equals(equno)){
+						throw new AppRuntimeException(Constants.kCode_NoEqu, "设备升级中，敬请期待");
+					}*/
+					Map<String,Object> data = new HashMap<>();
+					
+					if(params.get("game_code")==null){
+						throw new AppRuntimeException(Constants.kCode_Null,"game_code不能为空");
+					}
+					if(params.get("game_mode")==null){
+						throw new AppRuntimeException(Constants.kCode_Null,"game_mode不能为空");
+					}
+
+					String gameCode = params.get("game_code").toString();
+
+					Integer game_mode = Integer.parseInt(params.get("game_mode").toString());
+					data.put("game_mode", game_mode);
+					data.put("game_Code", gameCode);
+					List<String> list=	com.wangtiansoft.KingDarts.config.netty.constants.Constants.stringListUrl;
+			        String packetsURL=list.get(list.size()-1);
+			        list.remove(list.size()-1);
+
+				Map<String,Object> map = new HashMap<>();
+				map.put("code", com.wangtiansoft.KingDarts.config.netty.constants.Constants.code_Success);
+				map.put("type", com.wangtiansoft.KingDarts.config.netty.constants.Constants.message_type_packets);
+				map.put("msg", packetsURL);
+				map.put("data", data);
+				channel.writeAndFlush(JSON.toJSONString(map)+"\n"); 
+
+				Map<String,String> result = new HashMap<>();
+				map.put("msg", packetsURL);
+				return result;
+			}
+		});
+		return result;
+	}
+	
+	
 }
