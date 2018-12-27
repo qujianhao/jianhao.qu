@@ -483,9 +483,11 @@ public class GameClientServiceImpl extends BaseService implements GameClientServ
 					Integer game_mode = Integer.parseInt(params.get("game_mode").toString());
 					data.put("game_mode", game_mode);
 					data.put("game_Code", gameCode);
+
 					List<String> list=	com.wangtiansoft.KingDarts.config.netty.constants.Constants.stringListUrl;
-			        String packetsURL=list.get(list.size()-1);
-			        list.remove(list.size()-1);
+					Random random = new Random(System.currentTimeMillis());
+					int iRandom = random.nextInt(list.size()-1);
+			        String packetsURL=list.get(iRandom);  
 
 				Map<String,Object> map = new HashMap<>();
 				map.put("code", com.wangtiansoft.KingDarts.config.netty.constants.Constants.code_Success);
