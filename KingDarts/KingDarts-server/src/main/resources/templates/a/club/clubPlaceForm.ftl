@@ -55,7 +55,7 @@
 	                        <div class="col-sm-6 form-group">
 	                            <label class="col-sm-3 control-label" for="areas"><span style="color:red">*</span>区：</label>
 	                            <div class="col-sm-9">
-	                            	<select class="form-control"  data-district="" id="areas" name="areas" value="${entity.areas} placeholder="请选择区" title="请选择区" required ></select>
+	                            	<select class="form-control"  data-district="" id="areas" name="areas" value="${entity.areas}" placeholder="请选择区" title="请选择区" required ></select>
 	                            </div>
 	                        </div>
                         </div>
@@ -129,6 +129,27 @@
 	
 	
     $("document").ready(function () {
+    
+	    //省市区初始化回显
+		$("#distpicker").distpicker('destroy');
+		$("#distpicker").distpicker({
+	
+	    autoSelect: true,
+	    placeholder: false
+	    });
+    
+	     var provinceSelect= $('[name=province]').attr("value");
+	    var citySelect= $('[name=city]').attr("value");
+	    
+	    var areasSelect= $('[name=areas]').attr("value");
+    
+  	    $("#province").val(provinceSelect);
+        $("#province").trigger("change");
+        $("#city").val(citySelect);
+        $("#city").trigger("change");
+        $("#areas").val(areasSelect);
+        $("#areas").trigger("change");
+
     	//console.log('${entity.details}');
         $(".wt-close").click(function(){
      	   WT.wt_close();
