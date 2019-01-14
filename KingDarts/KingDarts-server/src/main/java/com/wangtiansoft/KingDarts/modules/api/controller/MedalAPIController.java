@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,10 +56,27 @@ public class MedalAPIController  extends BaseController{
 				Map<String, Object> paramMap = new HashMap<>();
 				paramMap.put("is_publish", 1);
 				pageBean.setRows(1);
-				Page<Map> page = advertInfoService.queryAdvertInfoPageList(paramMap, pageBean);
+
+	    		String equno = request.getHeader("equno");
+		        
+		        
+		        Page<Map> page = null ;
 				
+		    String belongClub=    advertInfoService.queryEquclubByEquno(equno);
+		        paramMap.put("belong_club",belongClub);
+		        Page<Map> 	pageNow = advertInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
+				
+				if(pageNow.size()!=0){
+//				if(page1.size()!=0){
+					page=pageNow;
+					
+				}else {
+//			        paramMap.put("belong_club","");
+				 page = advertInfoService.queryAdvertInfoPageListNoclub(paramMap, pageBean);
+				
+				}
 				Map<String,Object> map = new HashMap<>();
-				if(!page.getPageSizeZero()){
+				if(page.size()!=0){
 					map.put("file_url", page.getResult().get(0).get("file_url"));
 					map.put("qr_left", page.getResult().get(0).get("qr_left"));
 					map.put("qr_top", page.getResult().get(0).get("qr_top"));

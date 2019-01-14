@@ -1,5 +1,6 @@
 package com.wangtiansoft.KingDarts.persistence.dao.master;
 
+import com.github.pagehelper.Page;
 import com.wangtiansoft.KingDarts.persistence.base.BaseMapper;
 import com.wangtiansoft.KingDarts.persistence.entity.AdvertInfo;
 
@@ -10,4 +11,17 @@ public interface AdvertInfoMapper extends BaseMapper<AdvertInfo> {
 
     List<Map> queryAdvertInfoList(Map paramMap);
 
+    
+    
+
+//    List<Map> queryAdvertInfoListByclubId(Map paramMap);
+
+
+
+
+	Page<Map> queryAdvertInfoListByclubId(Map paramMap);
+	Page<Map> queryAdvertInfoListNoclub(Map paramMap);
+
+	
+    
 }

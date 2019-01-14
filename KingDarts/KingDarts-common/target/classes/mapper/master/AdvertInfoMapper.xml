@@ -12,6 +12,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
     <result column="user_id" jdbcType="VARCHAR" property="user_id" />
     <result column="is_delete" jdbcType="TINYINT" property="is_delete" />
+    <result column="belong_club" jdbcType="VARCHAR" property="belong_club" />
   </resultMap>
 
     <select id="queryAdvertInfoList" resultType="map">
@@ -36,4 +37,68 @@
             ORDER BY dai.${orderSql}
         </if>
     </select>
+    
+    
+    <select id="queryAdvertInfoListByclubId" resultType="map">
+        SELECT
+            dai.*
+        FROM `darts_advert_info` as dai
+        WHERE 1=1
+                    <if test="belong_club != null and belong_club != ''">
+               AND dai.belong_club = #{belong_club}
+            </if>
+        
+            <if test="file_name != null and file_name != ''">
+                AND dai.file_name like concat('%', #{file_name}, '%')
+            </if>
+            <if test="is_publish != null and is_publish != ''">
+                AND dai.is_publish = #{is_publish}
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dai.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dai.#{update_time_end} >= update_time
+            </if>
+            AND dai.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dai.${orderSql}
+        </if>
+    </select>    
+    
+    
+    
+        <select id="queryAdvertInfoListNoclub" resultType="map">
+        SELECT
+            dai.*
+        FROM `darts_advert_info` as dai
+        WHERE 1=1
+             
+<!--                AND dai.belong_club ='' or dai.belong_club = null -->
+      AND dai.belong_club ='' or   dai.belong_club is null
+        
+            <if test="file_name != null and file_name != ''">
+                AND dai.file_name like concat('%', #{file_name}, '%')
+            </if>
+            <if test="is_publish != null and is_publish != ''">
+                AND dai.is_publish = #{is_publish}
+            </if>
+            <if test="update_time_start != null and update_time_start != ''">
+                AND dai.update_time >= #{update_time_start}
+            </if>
+            <if test="update_time_end != null and update_time_end != ''">
+                AND dai.#{update_time_end} >= update_time
+            </if>
+            AND dai.is_delete = 0
+        <if test="orderSql != null and orderSql != ''">
+            ORDER BY dai.${orderSql}
+        </if>
+    </select> 
+    
+    
+    
+    
+    
+    
+    
 </mapper>

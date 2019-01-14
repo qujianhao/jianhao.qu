@@ -71,6 +71,13 @@ public class AdvertInfo extends BaseEntity {
      * 二维码地址
      */
     private String qrcode_url;
+    
+    
+    
+    /**
+     * 二维码地址
+     */
+    private String belong_club;
 
     /**
      * 获取主键
@@ -265,5 +272,14 @@ public class AdvertInfo extends BaseEntity {
 	public void setQrcode_url(String qrcode_url) {
 		this.qrcode_url = qrcode_url;
 	}
+
+	public String getBelong_club() {
+		return belong_club;
+	}
+
+	public void setBelong_club(String belong_club) {
+		this.belong_club = belong_club;
+	}
     
+	
 }
