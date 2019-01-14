@@ -43,4 +43,8 @@ public interface EquInfoMapper extends BaseMapper<EquInfo> {
     
     @Update("update darts_equ_info set isline = 0 where isline = 1")
     Integer equOffLine();
+    
+    //查詢设备的俱乐部
+    @Select("SELECT  dci.id FROM  darts_equ_auth dea  INNER JOIN darts_club_info dci ON dci.cno = dea.auth_no  where  dea.equno = #{equno}")
+        String   queryEquclubByEquno(String equno);
 }
