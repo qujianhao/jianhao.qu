@@ -2,6 +2,7 @@ package com.wangtiansoft.KingDarts.modules.club.controller;
 
 import com.github.pagehelper.Page;
 import com.wangtiansoft.KingDarts.core.support.common.BaseController;
+import com.wangtiansoft.KingDarts.modules.advert.service.AdvertInfoService;
 import com.wangtiansoft.KingDarts.modules.agent.service.AgentInfoService;
 import com.wangtiansoft.KingDarts.modules.club.service.ClubInfoService;
 import com.wangtiansoft.KingDarts.modules.club.service.ClubPlaceService;
@@ -17,12 +18,14 @@ import com.wangtiansoft.KingDarts.common.utils.date.DateUtil;
 import com.wangtiansoft.KingDarts.config.utils.MD5Util;
 import com.wangtiansoft.KingDarts.constants.Constants;
 import com.wangtiansoft.KingDarts.persistence.base.BaseExample;
+import com.wangtiansoft.KingDarts.persistence.entity.AdvertInfo;
 import com.wangtiansoft.KingDarts.persistence.entity.AgentInfo;
 import com.wangtiansoft.KingDarts.persistence.entity.ClubInfo;
 import com.wangtiansoft.KingDarts.persistence.entity.ClubPlace;
 import com.wangtiansoft.KingDarts.persistence.entity.EquAuth;
 import com.wangtiansoft.KingDarts.persistence.entity.EquInfo;
 import com.wangtiansoft.KingDarts.persistence.entity.MerchantAccount;
+import com.wangtiansoft.KingDarts.results.core.AdvertInfoResult;
 import com.wangtiansoft.KingDarts.results.core.ClubInfoResult;
 import com.wangtiansoft.KingDarts.results.core.ClubPlaceResult;
 
@@ -74,7 +77,9 @@ public class ClubInfoController extends BaseController {
     @Resource
     private AgentInfoService agentInfoService;
     
-    
+    @Resource
+    private AdvertInfoService advertInfoService;
+
 
     //  列表
     //@PreAuthorize("hasPermission('','_CLUBINFO:VIEW')")
@@ -373,6 +378,117 @@ public class ClubInfoController extends BaseController {
         Page<Map> page = clubInfoService.queryClubOrder(paramMap, pageBean);
         return new JQGirdPageResult(page);
     }
+    
+    //  编辑查看页面
+    //@PreAuthorize("hasPermission('','_CLUBINFO:EDIT')")
+    @GetMapping("/advert_manage")
+    public String advert_manage(@RequestParam Map<String, Object> paramMap) {
+;
+           String id = getParaValue("id");
+           ClubInfo entity = clubInfoService.findById(Integer.valueOf(id));
+           paramMap.put("belong_club", id);
+        request.setAttribute("paramMap", paramMap);
+        request.setAttribute("belong_club", id);
+        return "/a/club/advertInfo_list";
+    }
+    
+
+
+    //  列表分页
+//    @PreAuthorize("hasPermission('','_ADVERTINFO:VIEW')")
+    @PostMapping("/advertInfo_searchById")
+    public
+    @ResponseBody
+    JQGirdPageResult advertInfo_searchById(@RequestParam Map<String, Object> paramMap, @ModelAttribute PageBean pageBean,@RequestParam(value="id",required=false) String id) {
+//        String belong_club = getParaValue("id");
+//        paramMap.put("belong_club",belong_club);
+        Page<Map> page = advertInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
+        return makePageResult(page, AdvertInfoResult.class);
+    }   
+    
+    
+    
+
+    
+    //  编辑查看页面
+    //@PreAuthorize("hasPermission('','_CLUBINFO:EDIT')")
+    @GetMapping("/packets_manage")
+    public String packets_manage(@RequestParam Map<String, Object> paramMap,
+    		@RequestParam(value="id",required=false) String id,@RequestParam(value="type",required=false) String type) {
+    	Map map = clubInfoService.getClubInfoView(Integer.valueOf(id));
+    	map.put("type", type);
+        request.setAttribute("map", map);
+        
+        List<Map> aglist = agentInfoService.queryAgentInfoList(new HashMap());
+        request.setAttribute("aglist", aglist);
+        return "/a/club/packets_manage";
+    }
+    
+    
+    
+    
+    
+    
+
+    //  编辑页面
+    @PreAuthorize("hasPermission('','_ADVERTINFO:EDIT')")
+    @GetMapping("/advertInfo_edit")
+    public String advertInfo_edit() {
+        String id = getParaValue("id");
+        AdvertInfo entity = advertInfoService.findById(Integer.valueOf(id));
+        request.setAttribute("entity", entity);
+        return "/a/advert/advertInfo_edit";
+    }
+
+    //  编辑保存
+    @PreAuthorize("hasPermission('','_ADVERTINFO:EDIT')")
+    @PostMapping("/advertInfo_edit")
+    public
+    @ResponseBody
+    ApiResult advertInfo_edit(@ModelAttribute("entity") AdvertInfo entity) {
+        advertInfoService.updateByIdSelective(entity);
+        AdvertInfoResult result = makeResult(entity, AdvertInfoResult.class);
+        return ApiResult.success(result);
+    }
+
+    //  新建页面
+    @PreAuthorize("hasPermission('','_ADVERTINFO:ADD')")
+    @GetMapping("/advertInfo_add")
+    public String advertInfo_add( @RequestParam Map<String, Object> paramMap) {
+        String belong_club = getParaValue("id");
+        request.setAttribute("belong_club",belong_club);
+        request.setAttribute("paramMap", paramMap);
+        return "/a/club/advertInfo_add";
+    }
+
+    //  新建保存
+    @PreAuthorize("hasPermission('','_ADVERTINFO:ADD')")
+    @PostMapping("/advertInfo_add")
+    public
+    @ResponseBody
+    ApiResult advertInfo_add(@ModelAttribute("entity") AdvertInfo entity) {
+    	entity.setAdd_time(new Date());
+    	entity.setUpdate_time(new Date());
+        advertInfoService.save(entity);
+        entity.setIs_publish(Constants.False);
+        advertInfoService.updateByIdSelective(entity);
+        AdvertInfoResult result = makeResult(entity, AdvertInfoResult.class);
+        return ApiResult.success(result);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
 
