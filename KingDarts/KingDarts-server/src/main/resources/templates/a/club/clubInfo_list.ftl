@@ -67,7 +67,7 @@
                     {name: 'cname', index: 'cname', width: 5 , sortable: false},
                     {name: 'captain', index: 'captain', width: 5 , sortable: false},
                     {name: 'add_time', index: 'add_time', width: 5 },
-                    {name: 'btns', index: 'btns', sortable: false, width: 10, formatter: function(cellvalue, options, rowObject){
+                    {name: 'btns', index: 'btns', sortable: false, width: 12, formatter: function(cellvalue, options, rowObject){
                         var rowId = options.rowId;
                         var state_text = rowObject.acac == 1 ? "取消ACAC" : "设置ACAC";
                         var text = "";
@@ -75,12 +75,31 @@
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-edit'>编辑</a>";
                         if( rowObject.cno!='11000059'){
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-edity'>游戏定价</a>";
+                          text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-advertManage'>广告管理</a>";
+                            text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-packetsManage'>红包管理</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' data-value='" + rowObject.acac + "' class='wt-a wt-warning wt-state'>" + state_text + "</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-danger wt-delete'>删除</a>" ;
                         }
                         return text;
                     }}
                 ],{multiselect: false});
+
+        //  广告管理
+        $(".jqGrid_wrapper").on('click', '.wt-advertManage', function () {
+            var rowData = WT.wt_jqtable_rowdata($(this).attr('data-rowId'));
+            WT.wt_open_layer('${base}/a/clubInfo/advert_manage?type=1&id=' + rowData['id'],null,"广告管理");
+        });
+       
+       
+               //  红包管理
+        $(".jqGrid_wrapper").on('click', '.wt-packetsManage', function () {
+            var rowData = WT.wt_jqtable_rowdata($(this).attr('data-rowId'));
+            WT.wt_open_layer('${base}/a/clubInfo/packets_manage?type=1&id=' + rowData['id'],null,"红包管理");
+        });
+        
+
+
+
 
         //  查看
         $(".jqGrid_wrapper").on('click', '.wt-view', function () {
