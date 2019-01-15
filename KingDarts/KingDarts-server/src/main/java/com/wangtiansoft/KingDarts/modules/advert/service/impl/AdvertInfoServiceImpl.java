@@ -31,7 +31,6 @@ public class AdvertInfoServiceImpl extends BaseService<AdvertInfo, Integer> impl
 
 
     
-    
     @Override
     public BaseMapper getBaseMapper() {
         return advertInfoMapper;
@@ -57,6 +56,7 @@ public class AdvertInfoServiceImpl extends BaseService<AdvertInfo, Integer> impl
         return (Page<Map>) advertInfoMapper.queryAdvertInfoListByclubId(paramMap);
     }
 
+    
 	@Override
 	public String queryEquclubByEquno(String equno) {
 
