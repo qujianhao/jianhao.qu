@@ -21,6 +21,7 @@ public interface AdvertInfoService extends IBaseService<AdvertInfo, Integer> {
 
 	String queryEquclubByEquno(String equno);
 
+	
 	Page<Map> queryAdvertInfoPageListNoclub(Map<String, Object> paramMap, PageBean pageBean);
 }
 
