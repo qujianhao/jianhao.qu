@@ -65,9 +65,7 @@
             ORDER BY dai.${orderSql}
         </if>
     </select>    
-    
-    
-    
+
         <select id="queryAdvertInfoListNoclub" resultType="map">
         SELECT
             dai.*
@@ -94,11 +92,5 @@
             ORDER BY dai.${orderSql}
         </if>
     </select> 
-    
-    
-    
-    
-    
-    
-    
+
 </mapper>
