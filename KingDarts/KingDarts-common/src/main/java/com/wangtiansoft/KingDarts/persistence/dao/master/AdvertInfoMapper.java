@@ -10,18 +10,7 @@ import java.util.Map;
 public interface AdvertInfoMapper extends BaseMapper<AdvertInfo> {
 
     List<Map> queryAdvertInfoList(Map paramMap);
-
-    
-    
-
-//    List<Map> queryAdvertInfoListByclubId(Map paramMap);
-
-
-
-
 	Page<Map> queryAdvertInfoListByclubId(Map paramMap);
 	Page<Map> queryAdvertInfoListNoclub(Map paramMap);
-
-	
-    
+ 
 }
