@@ -12,7 +12,7 @@
     <div class="box box-default">
         <div class="box-body">
             <div class="row">
-                <div class="col-sm-6 form-group">
+                <div    class="col-sm-6 form-group">
                     <label for="name"><span style="color:red">*</span>账号名</label>
                     <input type="text" class="form-control" name="username" id="username" value="${accountEntity.username}"
                            placeholder="请输入账号名" required maxlength="30">
