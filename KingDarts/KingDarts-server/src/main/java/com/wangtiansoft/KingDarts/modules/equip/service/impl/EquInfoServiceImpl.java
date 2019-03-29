@@ -14,6 +14,7 @@ import com.wangtiansoft.KingDarts.modules.equip.service.EquAuthService;
 import com.wangtiansoft.KingDarts.modules.equip.service.EquInfoService;
 import com.wangtiansoft.KingDarts.modules.equip.service.EquLineService;
 import com.wangtiansoft.KingDarts.persistence.base.BaseMapper;
+import com.wangtiansoft.KingDarts.persistence.dao.master.AdvertInfoMapper;
 import com.wangtiansoft.KingDarts.persistence.dao.master.EquInfoMapper;
 import com.wangtiansoft.KingDarts.persistence.entity.EquAuth;
 import com.wangtiansoft.KingDarts.persistence.entity.EquInfo;
@@ -36,7 +37,8 @@ import java.util.*;
 @Transactional
 @Service("equInfoService")
 public class EquInfoServiceImpl extends BaseService<EquInfo, String> implements EquInfoService{
-
+    @Autowired
+    private AdvertInfoMapper advertInfoMapper;
     @Autowired
     private EquInfoMapper equInfoMapper;
     @Autowired
@@ -195,4 +197,62 @@ public class EquInfoServiceImpl extends BaseService<EquInfo, String> implements 
         return (Page<Map>) equInfoMapper.queryEquStatistics(paramMap);
     }
     
+    //查询俱乐部广告
+
+    @Override
+    public Page<Map> queryAdvertInfoPageListByclubId(Map paramMap, PageBean pageBean) {
+        paramMap.put(SQLUtil.SQL_OrderSQL, SQLUtil.orderByCondition(pageBean));
+        PageHelper.startPage(pageBean.getPage(), pageBean.getRows());
+        if("".equals(paramMap.get(SQLUtil.SQL_OrderSQL))){
+        	 paramMap.put(SQLUtil.SQL_OrderSQL, " update_time desc");
+        }
+        return (Page<Map>) advertInfoMapper.queryAdvertInfoListByclubId(paramMap);
+    }
+
+    
+	@Override
+	public String queryEquclubByEquno(String equno) {	
+		 String belongClub=    equInfoMapper.queryEquclubByEquno(equno);
+ 
+		return belongClub;
+	}
+  
+	@Override
+	public  String  queryEquAgentByEquno(String belongClubCno) {	
+		String  belongAgent=    equInfoMapper.queryEquAgentByEquno(belongClubCno);
+		return belongAgent;
+	}
+
+	@Override
+	public Page<Map> queryAdvertInfoPageListNoclub(Map<String, Object> paramMap, PageBean pageBean) {
+        paramMap.put(SQLUtil.SQL_OrderSQL, SQLUtil.orderByCondition(pageBean));
+        PageHelper.startPage(pageBean.getPage(), pageBean.getRows());
+        if("".equals(paramMap.get(SQLUtil.SQL_OrderSQL))){
+        	 paramMap.put(SQLUtil.SQL_OrderSQL, " update_time desc");
+        }
+        return (Page<Map>) advertInfoMapper.queryAdvertInfoListNoclub(paramMap);
+	}
+	
+	    @Override
+	    public Page<Map> queryAdvertInfoPageListByagentId(Map paramMap, PageBean pageBean) {
+	        paramMap.put(SQLUtil.SQL_OrderSQL, SQLUtil.orderByCondition(pageBean));
+	        PageHelper.startPage(pageBean.getPage(), pageBean.getRows());
+	        if("".equals(paramMap.get(SQLUtil.SQL_OrderSQL))){
+	        	 paramMap.put(SQLUtil.SQL_OrderSQL, " update_time desc");
+	        }
+	        return (Page<Map>) advertInfoMapper.queryAdvertInfoListByagentId(paramMap);
+	    }
+
+	@Override
+	public Page<Map> queryAdvertInfotianjie(Map<String, Object> paramMap, PageBean pageBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String queryEquclubCnoByEquno(String equno) {		
+		 String belongClub=    equInfoMapper.queryEquclubCnoByEquno(equno);
+		return belongClub;
+	}
+	
 }
