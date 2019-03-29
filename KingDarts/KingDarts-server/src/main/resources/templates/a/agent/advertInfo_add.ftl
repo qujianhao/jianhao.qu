@@ -6,7 +6,7 @@
 <#escape x as x?html>
 <body class="content-wrapper-body">
 <#include "./a/commons/nav.ftl" />
-<form method="post" name="layerForm" id="layerForm" action="${base}/a/clubInfo/advertInfo_edit">
+<form method="post" name="layerForm" id="layerForm" action="${base}/a/agentInfo/advertInfo_edit">
     <section class="content">
         <div class="box box-default">
             <div class="box-body">
@@ -42,8 +42,8 @@
                                 <div class="col-sm-10">
                                 <input type="hidden" class="form-control" name="file_name" id="file_name" value="" required>
                                 <input type="hidden" class="form-control" name="file_size" id="file_size" value="" required>
-                                <input type="hidden" class="form-control" name="belong_club" id="belong_club" value="${belong_club}" required> 
-                                <input type="hidden" class="form-control" name="belong_club2" id="belong_club28888" value="${paramMap.id}" required> 
+                                <input type="hidden" class="form-control" name="belong_agent" id="belong_agent" value="${belong_agent}" required> 
+                                 <input type="hidden" class="form-control" name="belong_agent2" id="belong_agent2" value="${paramMap.id}" required> 
                                     <textarea class="form-control" name="des_title" id="des_title" rows="6" title="请输入描述"  maxlength="255" required></textarea>
                                 </div>
                             </div>
@@ -84,7 +84,7 @@
             	return false;
             }
             WT.wt_confirm('是否保存?', function () {
-                WT.wt_ajax_form('${base}/a/clubInfo/advertInfo_add','layerForm',function(data){
+                WT.wt_ajax_form('${base}/a/agentInfo/advertInfo_add','layerForm',function(data){
                     WT.wt_alert('保存成功',function(){
                         WT.wt_reload_jqtable(parent);
                         WT.wt_close();

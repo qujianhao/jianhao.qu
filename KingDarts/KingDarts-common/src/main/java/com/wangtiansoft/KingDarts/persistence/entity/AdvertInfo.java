@@ -38,6 +38,8 @@ public class AdvertInfo extends BaseEntity {
      */
     private Integer is_publish;
 
+    
+    
     /**
      * 创建时间
      */
@@ -79,6 +81,13 @@ public class AdvertInfo extends BaseEntity {
      */
     private String belong_club;
 
+    
+    /**
+     * 二维码地址
+     */
+    private String belong_agent;
+
+    
     /**
      * 获取主键
      *
@@ -88,7 +97,15 @@ public class AdvertInfo extends BaseEntity {
         return id;
     }
 
-    /**
+    public String getBelong_agent() {
+		return belong_agent;
+	}
+
+	public void setBelong_agent(String belong_agent) {
+		this.belong_agent = belong_agent;
+	}
+
+	/**
      * 设置主键
      *
      * @param id 主键

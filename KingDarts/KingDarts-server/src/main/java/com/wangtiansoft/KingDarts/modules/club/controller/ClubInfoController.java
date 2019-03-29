@@ -385,13 +385,19 @@ public class ClubInfoController extends BaseController {
     public String advert_manage(@RequestParam Map<String, Object> paramMap) {
 ;
            String id = getParaValue("id");
-           ClubInfo entity = clubInfoService.findById(Integer.valueOf(id));
+//           ClubInfo entity = clubInfoService.findById(Integer.valueOf(id));
            paramMap.put("belong_club", id);
         request.setAttribute("paramMap", paramMap);
         request.setAttribute("belong_club", id);
         return "/a/club/advertInfo_list";
     }
-    
+    //  列表
+    @PreAuthorize("hasPermission('','_ADVERTINFO:VIEW')")
+    @RequestMapping("/advertInfo_list")
+    public String advertInfo_list(@RequestParam Map<String, Object> paramMap) {
+        request.setAttribute("paramMap", paramMap);
+        return "/a/club/advertInfo_list";
+    }
 
 
     //  列表分页
@@ -400,9 +406,8 @@ public class ClubInfoController extends BaseController {
     public
     @ResponseBody
     JQGirdPageResult advertInfo_searchById(@RequestParam Map<String, Object> paramMap, @ModelAttribute PageBean pageBean,@RequestParam(value="id",required=false) String id) {
-//        String belong_club = getParaValue("id");
-//        paramMap.put("belong_club",belong_club);
-        Page<Map> page = advertInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
+
+        Page<Map> page = equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
         return makePageResult(page, AdvertInfoResult.class);
     }   
     
@@ -423,12 +428,6 @@ public class ClubInfoController extends BaseController {
         request.setAttribute("aglist", aglist);
         return "/a/club/packets_manage";
     }
-    
-    
-    
-    
-    
-    
 
     //  编辑页面
     @PreAuthorize("hasPermission('','_ADVERTINFO:EDIT')")
@@ -455,6 +454,8 @@ public class ClubInfoController extends BaseController {
     @PreAuthorize("hasPermission('','_ADVERTINFO:ADD')")
     @GetMapping("/advertInfo_add")
     public String advertInfo_add( @RequestParam Map<String, Object> paramMap) {
+    	
+        System.out.print("567565675675");
         String belong_club = getParaValue("id");
         request.setAttribute("belong_club",belong_club);
         request.setAttribute("paramMap", paramMap);
@@ -467,6 +468,8 @@ public class ClubInfoController extends BaseController {
     public
     @ResponseBody
     ApiResult advertInfo_add(@ModelAttribute("entity") AdvertInfo entity) {
+    	
+    	System.out.print("67幹活幹活幹活幹活幹活567565675675");
     	entity.setAdd_time(new Date());
     	entity.setUpdate_time(new Date());
         advertInfoService.save(entity);
@@ -475,19 +478,7 @@ public class ClubInfoController extends BaseController {
         AdvertInfoResult result = makeResult(entity, AdvertInfoResult.class);
         return ApiResult.success(result);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
 }
 

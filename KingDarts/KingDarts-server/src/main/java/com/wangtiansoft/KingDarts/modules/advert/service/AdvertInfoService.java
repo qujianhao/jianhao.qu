@@ -17,11 +17,13 @@ public interface AdvertInfoService extends IBaseService<AdvertInfo, Integer> {
     // 分页查询AdvertInfo
     Page<Map> queryAdvertInfoPageList(Map paramMap, PageBean pageBean);
 
-	Page<Map> queryAdvertInfoPageListByclubId(Map paramMap, PageBean pageBean);
+	Page<Map> queryAdvertInfoPageListnocora(Map<String, Object> paramMap, PageBean pageBean);
 
-	String queryEquclubByEquno(String equno);
-
-	
-	Page<Map> queryAdvertInfoPageListNoclub(Map<String, Object> paramMap, PageBean pageBean);
+//	Page<Map> queryAdvertInfoPageListByclubId(Map paramMap, PageBean pageBean);
+//
+//	String queryEquclubByEquno(String equno);
+//
+//	
+//	Page<Map> queryAdvertInfoPageListNoclub(Map<String, Object> paramMap, PageBean pageBean);
 }
 

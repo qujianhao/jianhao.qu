@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.wangtiansoft.KingDarts.results.core.AdvertInfoResult;
 import com.wangtiansoft.KingDarts.core.support.common.BaseController;
 import com.wangtiansoft.KingDarts.modules.advert.service.AdvertInfoService;
+import com.wangtiansoft.KingDarts.modules.equip.service.EquInfoService;
 import com.wangtiansoft.KingDarts.common.bean.ApiResult;
 import com.wangtiansoft.KingDarts.common.bean.JQGirdPageResult;
 import com.wangtiansoft.KingDarts.common.bean.PageBean;
@@ -31,6 +32,9 @@ public class AdvertInfoController extends BaseController {
 
     @Resource
     private AdvertInfoService advertInfoService;
+    @Resource
+    private EquInfoService equInfoService;
+    
 
     //  列表
     @PreAuthorize("hasPermission('','_ADVERTINFO:VIEW')")
@@ -46,7 +50,7 @@ public class AdvertInfoController extends BaseController {
     public
     @ResponseBody
     JQGirdPageResult advertInfo_search(@RequestParam Map<String, Object> paramMap, @ModelAttribute PageBean pageBean) {
-        Page<Map> page = advertInfoService.queryAdvertInfoPageList(paramMap, pageBean);
+        Page<Map> page = advertInfoService.queryAdvertInfoPageListnocora(paramMap, pageBean);
         return makePageResult(page, AdvertInfoResult.class);
     }
 
@@ -111,8 +115,9 @@ public class AdvertInfoController extends BaseController {
     ApiResult advertInfo_state(Integer id,Integer is_publish) {
     	if(is_publish.equals(1)){
     		Map<String, Object> paramMap = new HashMap<>();
-			paramMap.put("is_publish", 1);
-			Page<Map> page = advertInfoService.queryAdvertInfoPageList(paramMap, new PageBean());
+			paramMap.put("is_publish", 1);		
+			Page<Map> page = advertInfoService.queryAdvertInfoPageListnocora(paramMap, new PageBean());
+
 			for(Map map:page.getResult()){
 				AdvertInfo entity = new AdvertInfo();
 				entity.setId((Integer)map.get("id"));
@@ -127,6 +132,60 @@ public class AdvertInfoController extends BaseController {
         
         return ApiResult.success();
     }
+    
+
+    //  修改发布状态
+    @PreAuthorize("hasPermission('','_ADVERTINFO:EDIT')")
+    @PostMapping("/advertInfo_state_isClub")
+    public
+    @ResponseBody
+    ApiResult advertInfo_state_isClub(Integer id,Integer is_publish,Integer clubId) {
+    	if(is_publish.equals(1)){
+    		Map<String, Object> paramMap = new HashMap<>();
+			paramMap.put("is_publish", 1);
+			
+			paramMap.put("belong_club", clubId);
+//			paramMap.put("belong_agent", "");		
+			Page<Map> page = equInfoService.queryAdvertInfoPageListByclubId(paramMap, new PageBean());						
+//			Page<Map> page = advertInfoService.queryAdvertInfoPageList(paramMap, new PageBean());
+			for(Map map:page.getResult()){
+				AdvertInfo entity = new AdvertInfo();
+				entity.setId((Integer)map.get("id"));
+				entity.setIs_publish(0);
+				advertInfoService.updateByIdSelective(entity);
+			}
+    	}
+        AdvertInfo entity = advertInfoService.findById(id);
+        entity.setIs_publish(is_publish);
+        advertInfoService.updateByIdSelective(entity);       
+        return ApiResult.success();
+    }
+
+    //  修改发布状态
+    @PreAuthorize("hasPermission('','_ADVERTINFO:EDIT')")
+    @PostMapping("/advertInfo_state_isAgent")
+    public
+    @ResponseBody
+    ApiResult advertInfo_state_isAgent(Integer id,Integer is_publish,Integer agentId) {
+    	if(is_publish.equals(1)){
+    		Map<String, Object> paramMap = new HashMap<>();
+			paramMap.put("is_publish", 1);			
+//			paramMap.put("belong_club", "");
+			paramMap.put("belong_agent", agentId);			
+			Page<Map> page = equInfoService.queryAdvertInfoPageListByagentId(paramMap, new PageBean());
+			for(Map map:page.getResult()){
+				AdvertInfo entity = new AdvertInfo();
+				entity.setId((Integer)map.get("id"));
+				entity.setIs_publish(0);
+				advertInfoService.updateByIdSelective(entity);
+			}
+    	}
+        AdvertInfo entity = advertInfoService.findById(id);
+        entity.setIs_publish(is_publish);
+        advertInfoService.updateByIdSelective(entity);     
+        return ApiResult.success();
+    }
+
 
     //  删除
     @PreAuthorize("hasPermission('','_ADVERTINFO:DELETE')")

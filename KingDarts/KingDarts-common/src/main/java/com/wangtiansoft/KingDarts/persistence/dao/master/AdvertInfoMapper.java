@@ -12,5 +12,7 @@ public interface AdvertInfoMapper extends BaseMapper<AdvertInfo> {
     List<Map> queryAdvertInfoList(Map paramMap);
 	Page<Map> queryAdvertInfoListByclubId(Map paramMap);
 	Page<Map> queryAdvertInfoListNoclub(Map paramMap);
+	Page<Map> queryAdvertInfoListByagentId(Map paramMap);
+	Page<Map> queryAdvertInfoPageListnocora(Map<String, Object> paramMap);
  
 }

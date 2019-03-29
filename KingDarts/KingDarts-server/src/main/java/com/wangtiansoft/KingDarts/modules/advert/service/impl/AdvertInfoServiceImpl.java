@@ -23,12 +23,12 @@ import java.util.*;
 @Service("advertInfoService")
 public class AdvertInfoServiceImpl extends BaseService<AdvertInfo, Integer> implements AdvertInfoService{
 
+
     @Autowired
     private AdvertInfoMapper advertInfoMapper;
-
-    @Autowired
-    private EquInfoMapper equInfoMapper;
-
+//
+//    @Autowired
+//    private EquInfoMapper equInfoMapper;
 
     
     @Override
@@ -46,33 +46,15 @@ public class AdvertInfoServiceImpl extends BaseService<AdvertInfo, Integer> impl
         return (Page<Map>) advertInfoMapper.queryAdvertInfoList(paramMap);
     }
 
-    @Override
-    public Page<Map> queryAdvertInfoPageListByclubId(Map paramMap, PageBean pageBean) {
+	@Override
+	public Page<Map> queryAdvertInfoPageListnocora(Map<String, Object> paramMap, PageBean pageBean) {
+
         paramMap.put(SQLUtil.SQL_OrderSQL, SQLUtil.orderByCondition(pageBean));
         PageHelper.startPage(pageBean.getPage(), pageBean.getRows());
         if("".equals(paramMap.get(SQLUtil.SQL_OrderSQL))){
         	 paramMap.put(SQLUtil.SQL_OrderSQL, " update_time desc");
         }
-        return (Page<Map>) advertInfoMapper.queryAdvertInfoListByclubId(paramMap);
-    }
-
-    
-	@Override
-	public String queryEquclubByEquno(String equno) {
-
-		
-		 String belongClub=    equInfoMapper.queryEquclubByEquno(equno);
- 
-		return belongClub;
+        return (Page<Map>) advertInfoMapper.queryAdvertInfoPageListnocora(paramMap);
 	}
 
-	@Override
-	public Page<Map> queryAdvertInfoPageListNoclub(Map<String, Object> paramMap, PageBean pageBean) {
-        paramMap.put(SQLUtil.SQL_OrderSQL, SQLUtil.orderByCondition(pageBean));
-        PageHelper.startPage(pageBean.getPage(), pageBean.getRows());
-        if("".equals(paramMap.get(SQLUtil.SQL_OrderSQL))){
-        	 paramMap.put(SQLUtil.SQL_OrderSQL, " update_time desc");
-        }
-        return (Page<Map>) advertInfoMapper.queryAdvertInfoListNoclub(paramMap);
-	}
 }

@@ -7,7 +7,7 @@
 <body class="content-wrapper-body">
 <#include "./a/commons/nav.ftl" />
 <section class="content">
-    <form method="post" name="frameForm" id="frameForm" action="${base}/a/club/advertInfo_list">
+    <form method="post" name="frameForm" id="frameForm" action="${base}/a/agent/advertInfo_list">
         <div class="box box-primary">
             <div class="box-body">
                 <div class="row">
@@ -28,8 +28,8 @@
                 </div>
             </div>
 
-      <input type="hidden" name="belong_club" id="belong_club"   value="${paramMap.id}">
-      <input type="hidden" name="belong_club" id="belong_club"   value="${belong_club}">
+      <input type="hidden" name="belong_agent" id="belong_agent"   value="${paramMap.id}">
+      <input type="hidden" name="belong_agent" id="belong_agent"   value="${belong_agent}">
             <div class="box-footer">
                 <div class="col-sm-12 wt-btns-left">
                     <button type="button" class="btn btn-sm btn-default wt-search">搜索</button>
@@ -70,7 +70,7 @@
     		}).trigger("reloadGrid");
     	})
 
-        WT.wt_jqtable_multi('${base}/a/clubInfo/advertInfo_searchById?id=${paramMap.id}',
+        WT.wt_jqtable_multi('${base}/a/agentInfo/advertInfo_searchById?id=${paramMap.id}',
                 [ '',  '名称', '大小', '描述', '上传时间', '操作'],
                 [ 
                     {name: 'id', index: 'id', width: 5 , sortable: false,hidden:true},
@@ -106,8 +106,8 @@
 
         //  新增
         $(".wt-add").click(function () {
-        var belongclubId=$("#belong_club").val();   
-            WT.wt_open_fullscreen('${base}/a/clubInfo/advertInfo_add?id=' + belongclubId);
+        var belong_agent=$("#belong_agent").val();
+            WT.wt_open_fullscreen('${base}/a/agentInfo/advertInfo_add?id=' + belong_agent);
         });
 
         //  发布
@@ -115,11 +115,11 @@
             var rowData = WT.wt_jqtable_rowdata($(this).attr('data-rowId'));
             var is_publish = $(this).attr('data-value');
             var state_text = is_publish == 1 ? "取消发布" : "发布";
+               var belong_agent=$("#belong_agent").val();
             var params_is_publish = is_publish == 1 ? 0 : 1;
-                   var belongclubId=$("#belong_club").val();
-            var params = {id : rowData.id, is_publish: params_is_publish , clubId: belongclubId};
+            var params = {id : rowData.id, is_publish: params_is_publish , agentId: belong_agent};
             WT.wt_confirm('是否' + state_text + '?', function () {
-                WT.wt_ajax_jsondata('${base}/a/advertInfo/advertInfo_state_isClub', params, function (data) {
+                WT.wt_ajax_jsondata('${base}/a/advertInfo/advertInfo_state_isAgent', params, function (data) {
                     WT.wt_alert('保存成功');
                     WT.wt_reload_jqtable(this);
                 });
