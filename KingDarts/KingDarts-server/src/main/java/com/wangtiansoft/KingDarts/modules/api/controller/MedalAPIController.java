@@ -21,6 +21,7 @@ import com.wangtiansoft.KingDarts.common.exception.AppRuntimeException;
 import com.wangtiansoft.KingDarts.common.utils.BeanUtil;
 import com.wangtiansoft.KingDarts.core.support.common.BaseController;
 import com.wangtiansoft.KingDarts.modules.advert.service.AdvertInfoService;
+import com.wangtiansoft.KingDarts.modules.equip.service.EquInfoService;
 import com.wangtiansoft.KingDarts.modules.medal.service.MedalService;
 import com.wangtiansoft.KingDarts.modules.medalWinner.service.MedalWinnerService;
 import com.wangtiansoft.KingDarts.modules.user.service.UserService;
@@ -42,6 +43,11 @@ public class MedalAPIController  extends BaseController{
 	@Resource
 	private MedalService medalService;
 	
+	
+	@Resource
+	private EquInfoService equInfoService;
+		
+	
 	@Resource
 	private UserService userService;
 	
@@ -56,23 +62,31 @@ public class MedalAPIController  extends BaseController{
 				Map<String, Object> paramMap = new HashMap<>();
 				paramMap.put("is_publish", 1);
 				pageBean.setRows(1);
-
 	    		String equno = request.getHeader("equno");
-		        
-		        
-		        Page<Map> page = null ;
-				
-		    String belongClub=    advertInfoService.queryEquclubByEquno(equno);
+		        Page<Map> page = null ;				
+			    String belongClub=    equInfoService.queryEquclubByEquno(equno);	    
+			    String belongClubCno=    equInfoService.queryEquclubCnoByEquno(equno);
+			    String belongAgent=    equInfoService.queryEquAgentByEquno(belongClubCno);
+			    Page<Map> 	pageNow = null ;	    
+		        if(belongClubCno !=null) {
+		    	  paramMap.put("belong_agent",belongAgent);
+				 pageNow = equInfoService.queryAdvertInfoPageListByagentId(paramMap, pageBean);
+				 if(pageNow.getTotal()==0) {
+				     paramMap.put("belong_club",belongClub);
+					   	pageNow = equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
+					   	
+				 }			
+				 
+				}else {
 		        paramMap.put("belong_club",belongClub);
-		        Page<Map> 	pageNow = advertInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
-				
+		       	pageNow = equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);	
+		       	
+				}
 				if(pageNow.size()!=0){
 //				if(page1.size()!=0){
-					page=pageNow;
-					
+					page=pageNow;					
 				}else {
-//			        paramMap.put("belong_club","");
-				 page = advertInfoService.queryAdvertInfoPageListNoclub(paramMap, pageBean);
+				 page = equInfoService.queryAdvertInfoPageListNoclub(paramMap, pageBean);
 				
 				}
 				Map<String,Object> map = new HashMap<>();
@@ -143,7 +157,7 @@ public class MedalAPIController  extends BaseController{
 						}
 					}
 					//更新后的 用户获得的所有勋章
-					Map<String,Object> queryMap=new HashMap<>();
+					Map<String,Object> queryMap=new HashMap<>();        
 					queryMap.put("user_id", uuid);
 					List<Map> medalWinnerList=medalWinnerService.queryMedalWinnerList(queryMap);
 					map.put("medalWinnerList", medalWinnerList);
