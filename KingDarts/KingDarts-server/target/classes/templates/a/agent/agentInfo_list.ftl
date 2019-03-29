@@ -66,12 +66,20 @@
                         var text = "";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-viewf'>名下飞镖机</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-viewj'>名下俱乐部</a>";
+                            text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-advertManage'>广告管理</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-view'>查看</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-edit'>修改</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-danger wt-delete'>删除</a>" ;
                         return text;
                     }}
                 ]);
+           //  广告管理
+        $(".jqGrid_wrapper").on('click', '.wt-advertManage', function () {
+            var rowData = WT.wt_jqtable_rowdata($(this).attr('data-rowId'));
+            WT.wt_open_layer('${base}/a/agentInfo/advert_manage?type=1&id=' + rowData['id'],null,"广告管理");
+        });             
+                
+                
         //  名下飞镖机
         $(".jqGrid_wrapper").on('click', '.wt-viewf', function () {
             var rowData = WT.wt_jqtable_rowdata($(this).attr('data-rowId'));

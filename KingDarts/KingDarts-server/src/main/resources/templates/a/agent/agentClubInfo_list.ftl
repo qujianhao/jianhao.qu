@@ -81,11 +81,20 @@
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-view'>查看</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-edit'>编辑</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-edity'>游戏定价</a>";
+                        
+                          text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-info wt-advertManage'>广告管理</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' data-value='" + rowObject.acac + "' class='wt-a wt-warning wt-state'>" + state_text + "</a>";
                         text += "<a href='javascript:void(0);' data-rowId='" + rowId + "' class='wt-a wt-danger wt-delete'>删除</a>" ;
                         return text;
                     }}
                 ]);
+        //  广告管理
+        $(".jqGrid_wrapper").on('click', '.wt-advertManage', function () {
+            var rowData = WT.wt_jqtable_rowdata($(this).attr('data-rowId'));
+            WT.wt_open_layer('${base}/a/clubInfo/advert_manage?type=1&id=' + rowData['id'],null,"广告管理");
+        });
+       
+
 
         //  查看
         $(".jqGrid_wrapper").on('click', '.wt-view', function () {

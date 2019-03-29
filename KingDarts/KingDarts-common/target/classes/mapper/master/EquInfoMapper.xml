@@ -129,4 +129,16 @@
         </if>
     </select>
     
+   
+    
+    
+<!--         <select id="queryEquAgentByEquno" resultType="String"> -->
+<!--  SELECT dai.id  FROM	darts_club_info AS dci	LEFT JOIN darts_agent_info AS dai ON dci.agno = dai.agno WHERE dci.cno  in(SELECT  dci.cno FROM  darts_equ_auth dea  INNER JOIN darts_club_info dci ON dci.cno = dea.auth_no  -->
+<!--  where  dea.equno = #{equno} -->
+	
+<!--     </select> -->
+     
+    
+    
+    
 </mapper>
