@@ -18,10 +18,20 @@ import org.apache.ibatis.annotations.Update;
 * Created by wt-templete-helper.
  */
 public interface EquInfoService extends IBaseService<EquInfo, String> {
+	
+	
+	//查询俱乐部插广告
+	Page<Map> queryAdvertInfoPageListByclubId(Map paramMap, PageBean pageBean);
 
+	//查询设备差俱乐部
+	String queryEquclubByEquno(String equno);
+
+	//查询广告信息不通过俱乐部
+	Page<Map> queryAdvertInfoPageListNoclub(Map<String, Object> paramMap, PageBean pageBean);
+	
     // 分页查询EquInfo
     Page<Map> queryEquInfoPageList(Map paramMap, PageBean pageBean);
-
+    // 获取设备信息通过编号
 	EquInfo getEquInfoByNo(String equno);
 
 	void equLogin(String id, String equno, String ip, String serverIp);
@@ -63,6 +73,21 @@ public interface EquInfoService extends IBaseService<EquInfo, String> {
 	Page<Map> queryEquStatistics(Map paramMap, PageBean pageBean);
 
 	Integer offLine();
+
+	Page<Map> queryAdvertInfotianjie(Map<String, Object> paramMap, PageBean pageBean);
+
+	
+	
+	
+	
+//	//查询代理商用过设备
+	String queryEquAgentByEquno(String belongClubCno);
+
+	
+	//查询代理商用过设备
+	Page<Map> queryAdvertInfoPageListByagentId(Map<String, Object> paramMap, PageBean pageBean);
+
+	String queryEquclubCnoByEquno(String equno);
 
 }
 

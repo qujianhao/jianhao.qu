@@ -48,4 +48,12 @@ public interface EquInfoMapper extends BaseMapper<EquInfo> {
     //查詢设备的俱乐部
     @Select("SELECT  dci.id FROM  darts_equ_auth dea  INNER JOIN darts_club_info dci ON dci.cno = dea.auth_no  where  dea.equno = #{equno}")
         String   queryEquclubByEquno(String equno);
+    
+    
+    @Select("SELECT  dci.agno FROM  darts_equ_auth dea  INNER JOIN darts_club_info dci ON dci.cno = dea.auth_no  where  dea.equno = #{equno}")
+    String   queryEquclubCnoByEquno(String equno);
+ 
+ @Select("SELECT  dai.id FROM	darts_agent_info   dai WHERE dai.agno= #{belongClubCno}")
+ String queryEquAgentByEquno(String belongClubCno);
+
 }
