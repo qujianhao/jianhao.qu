@@ -86,7 +86,9 @@ public class MedalAPIController  extends BaseController{
 //				if(page1.size()!=0){
 					page=pageNow;					
 				}else {
-				 page = equInfoService.queryAdvertInfoPageListNoclub(paramMap, pageBean);
+//				 page = equInfoService.queryAdvertInfoPageListNoclub(paramMap, pageBean);
+					page = advertInfoService.queryAdvertInfoPageListnocora(paramMap, pageBean);
+					
 				
 				}
 				Map<String,Object> map = new HashMap<>();
