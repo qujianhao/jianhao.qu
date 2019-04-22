@@ -68,7 +68,7 @@ public class MedalAPIController  extends BaseController{
 			    String belongClubCno=    equInfoService.queryEquclubCnoByEquno(equno);
 			    String belongAgent=    equInfoService.queryEquAgentByEquno(belongClubCno);
 			    Page<Map> 	pageNow = null ;	    
-		        if(belongClubCno !=null) {
+			    if(belongClubCno !=null&&!belongClubCno.equals("")) {
 		    	  paramMap.put("belong_agent",belongAgent);
 				 pageNow = equInfoService.queryAdvertInfoPageListByagentId(paramMap, pageBean);
 				 if(pageNow.getTotal()==0) {
