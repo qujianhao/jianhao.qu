@@ -42,6 +42,31 @@ public class FunCatchAPIController  extends BaseController{
 	@Autowired
 	private UserService userService;
 	
+	
+
+	/**
+	 * 娃娃机开始游戏
+	 * @return
+	 */
+	@RequestMapping(value="beginAdvert", method = RequestMethod.GET)
+	public @ResponseBody ApiResult  beginAdvert() {
+			ApiResult result = this.buildMobileAuthAjaxResponse(new IWebAuthResponseHandler() {
+				@Override
+				public Object execute(String uuid) throws Exception {					
+					Map<String,Object> map = new HashMap<>();
+					UserResult user=userService.getUserByUuid(uuid);
+					if(user==null) {
+						throw new AppRuntimeException("该用户不存在！");
+					}
+					userService.balanceChangedd(uuid);
+					return map;
+					}
+			});
+		return result;
+	}
+	
+	
+	
 	/**
 	 * 娃娃机初始化
 	 * @return
@@ -78,6 +103,10 @@ public class FunCatchAPIController  extends BaseController{
 			ApiResult result = this.buildMobileAuthAjaxResponse(new IWebAuthResponseHandler() {
 				@Override
 				public Object execute(String uuid) throws Exception {
+					
+					System.out.println("21321");	
+					System.out.println(uuid);
+					
 					Map<String,Object> map = new HashMap<>();
 					UserResult user=userService.getUserByUuid(uuid);
 					if(user==null) {
@@ -158,6 +187,8 @@ public class FunCatchAPIController  extends BaseController{
 	@RequestMapping(value="receiveinfo", method = RequestMethod.POST)
 	public @ResponseBody ApiResult  record(final String id,final String receive_name,
 			final String receive_address,final String receive_phone) {
+		System.out.println("45353hello你好");
+		
 			ApiResult result = this.buildMobileAuthAjaxResponse(new IWebAuthResponseHandler() {
 				@Override
 				public Object execute(String uuid) throws Exception {

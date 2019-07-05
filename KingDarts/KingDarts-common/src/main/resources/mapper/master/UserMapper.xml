@@ -140,4 +140,29 @@
     	</where>
     </update>
 
+
+
+
+
+    
+    <update id="consumeRechargeaddfive">
+    	update wt_user 
+    	<set>
+
+     coupon_balance =  #{Coupon_balance}
+
+    	</set> 
+    	<where> 
+    		uuid = #{uuid} 
+
+    	</where>
+    </update>
+
+
+
+
+
+
+
+
 </mapper>

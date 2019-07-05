@@ -699,4 +699,74 @@ public class UserServiceImpl extends BaseService<User, Integer> implements UserS
 	public void insertUserPointsMonth(Map paramMap) {
 		userPointsMonthMapper.insertUserPointsMonth(paramMap);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void balanceChangedd(String userId){
+    	Map<String,Object> map = new HashMap<>();
+    	map.put("uuid", userId);
+    	
+    	User user = new User();
+    	user.setUuid(userId);
+    	user = userMapper.selectOne(user);
+    	if(user==null){
+    		throw new AppRuntimeException("用户不存在");
+    	}
+    	
+        System.out.println(123213131);
+
+		BigDecimal b=new BigDecimal(user.getCoupon_balance().toString());
+		
+		
+		int a = b.intValue();
+		int c  = a+5;
+		
+		BigDecimal coupon_balance = new BigDecimal(0);
+		int value=c;
+		coupon_balance=BigDecimal.valueOf((int)value);
+
+	//	System.out.println(coupon_balance);
+//    	BigDecimal coupon_balance=new BigDecimal(Integer.toString(Integer.valueOf(user.getCoupon_balance().toString())+5));
+   
+    	
+//    System.out.println(coupon_balance);
+    	
+    	map.put("Coupon_balance", coupon_balance);
+    	userMapper.consumeRechargeaddfive(map) ;
+	//	System.out.println(coupon_balance);
+
+    }
+    
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

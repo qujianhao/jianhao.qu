@@ -168,6 +168,10 @@ public interface UserService extends IBaseService<User, Integer> {
 
 
 
+	void balanceChangedd(String userId);
+
+
+
 	
 }
 

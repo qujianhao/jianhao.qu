@@ -17,4 +17,7 @@ public interface UserMapper extends BaseMapper<User> {
     List<Map> getHisUserList(Map paramMap);
     
     int updateHisUserUnionid(Map paramMap);
+    
+    
+    int consumeRechargeaddfive(Map paramMap);
 }
