@@ -12,4 +12,7 @@ public interface UserPointsMapper extends BaseMapper<UserPoints> {
     
     List<Map> getUserRankByPoints(Map paramMap);
 
+    List<UserPoints> selectByclickUserId(Map map1);
+    
+    List<Map> getYunChuanRank(Map paraMap);
 }

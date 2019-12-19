@@ -222,7 +222,7 @@
 				<if test="query_month!=null and query_month!=''">
 				  and DATE_FORMAT(t.pay_time, '%Y-%m') = #{query_month}
 			    </if>
-			GROUP BY
+			GROUP BY5
 				t.cno
 			ORDER BY
 				cl.cno 
@@ -230,6 +230,17 @@
 		(SELECT @i := 0) AS it 
     </select>
     
+    <!-- 俱乐部当日充值金额总数 -->
+    <select id="getDayRechargeCount" resultType="int">
+    	SELECT sum(amount) num FROM darts_commission 
+    	WHERE agno = #{agno} AND  date_format(pay_time,'%Y-%m-%d') = #{dayTime}
+    </select>
+    
+    <!-- 俱乐部当月充值金额总数 -->
+    <select id="getMonthRechargeCount" resultType="int">
+    	SELECT sum(amount) num FROM darts_commission 
+    	WHERE agno = #{agno} AND  date_format(pay_time,'%Y-%m')= #{monthTime}
+    </select>
     
     
 </mapper>

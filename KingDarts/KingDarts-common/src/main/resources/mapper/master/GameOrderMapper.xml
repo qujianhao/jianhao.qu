@@ -87,5 +87,26 @@
         </if>
     </select>
     
+    <!-- 九镖获奖人员信息 -->
+    <select id="getAwardUserInfo" resultType="com.wangtiansoft.KingDarts.results.core.AwardUserInfo">
+    	select c.uuid,c.headimgurl,c.username,d.player_score,d.create_time from
+		(SELECT b.auth_no,b.user_id ud,a.player_score,a.create_time from darts_game_res_player a,darts_game_order	b where 
+		a.order_no = b.order_no AND
+		a.player_score &gt; #{small} and a.player_score &lt; #{big} AND b.game_type = 's010' and b.auth_no = #{auth_no}
+		GROUP BY b.user_id order by a.player_score desc) d ,wt_user c where c.uuid = d.ud limit 100
+    </select>
+    
+    <!-- 该俱乐部下获取该类奖项的人的数量 -->
+    <select id="getAwardNum" resultType="int">
+    	select count(g.uuid) num from
+    	(select c.uuid,c.headimgurl,c.username,d.player_score from
+		(SELECT b.auth_no,b.user_id ud,a.player_score from darts_game_res_player a,darts_game_order	b where 
+		a.order_no = b.order_no AND
+		a.player_score &gt; #{small} and a.player_score &lt; #{big} AND b.game_type = 's010' and b.auth_no = #{auth_no}
+		GROUP BY b.user_id order by a.player_score desc) d ,wt_user c where c.uuid = d.ud) g
+    </select>
+    
+    
+    
     
 </mapper>

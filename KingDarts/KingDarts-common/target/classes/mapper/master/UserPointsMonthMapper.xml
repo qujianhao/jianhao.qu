@@ -67,9 +67,6 @@
 			) AS rk
 		WHERE
 			1 = 1
-	        <if test="uuid != null and uuid != ''">
-                AND rk.user_id = #{uuid}
-            </if>
 	</select>
 	
 	<insert id="insertUserPointsMonth"  parameterType="java.util.Map">

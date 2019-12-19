@@ -3,6 +3,8 @@ package com.wangtiansoft.KingDarts.modules.api.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +18,11 @@ import com.wangtiansoft.KingDarts.common.utils.DateUtil;
 import com.wangtiansoft.KingDarts.common.utils.MapUtils;
 import com.wangtiansoft.KingDarts.common.utils.StringUtils;
 import com.wangtiansoft.KingDarts.config.lftpay.api.util.StringUtil;
+import com.wangtiansoft.KingDarts.core.extensions.token.service.impl.TokenServiceImpl;
 import com.wangtiansoft.KingDarts.core.support.common.BaseController;
 import com.wangtiansoft.KingDarts.modules.club.service.ClubInfoService;
 import com.wangtiansoft.KingDarts.modules.club.service.ClubPlaceService;
+import com.wangtiansoft.KingDarts.modules.user.service.NineGameService;
 import com.wangtiansoft.KingDarts.modules.user.service.UserService;
 import com.wangtiansoft.KingDarts.results.core.UserResult;
 
@@ -26,6 +30,7 @@ import com.wangtiansoft.KingDarts.results.core.UserResult;
 @RequestMapping("/api/userindex")
 public class UserIndexAPIController  extends BaseController{
 
+	private final Logger _logger = LoggerFactory.getLogger(UserIndexAPIController.class);
 	
 	@Autowired
 	private UserService userService;
@@ -35,6 +40,9 @@ public class UserIndexAPIController  extends BaseController{
 	
 	@Autowired 
 	private ClubInfoService clubInfoService;
+	
+	@Autowired
+	private NineGameService nineGameService;
 	
 	/**
 	 * 首页初始化
@@ -104,8 +112,46 @@ public class UserIndexAPIController  extends BaseController{
 					Page<Map> mapUser=null;
 					Map<String,Object> rankPage=new HashMap<>();
 					Page<Map> mapRank=null;
-					if(StringUtil.isNotEmpty(rank_time)) {
-						if(DateUtil.checkTimeInMonth(rank_time)) {
+					_logger.info("rank list param -------province={},game_type={},rank_time={}",province,game_type,rank_time);
+					// 九镖游戏查询
+					if("s010".equals(game_type)) {
+						PageBean pageBean=new PageBean();
+						pageBean.setPage(0);
+						pageBean.setRows(100);
+						int rank = 0;
+						if (!StringUtil.isNotEmpty(rank_time)) {
+							String subString = rank_time;
+							String month = subString.substring(0, 7);
+							queryRank.put("createTime", month);
+							rank = nineGameService.getRank(uuid, month);
+						}else {
+							queryRank.put("createTime", rank_time);
+							rank = nineGameService.getRank(uuid, rank_time);
+						}
+						mapRank = nineGameService.getRankListByMonth(queryRank, pageBean);
+						map.put("userRank", rank);
+						
+					}else {
+						if(StringUtil.isNotEmpty(rank_time)) {
+							if(DateUtil.checkTimeInMonth(rank_time)) {
+								mapRank=userService.queryUserRankByPointsPageList(queryRank,pageBean);
+								//用户信息和当月排行
+								queryRank.put("uuid", uuid);
+								PageBean pageBean=new PageBean();
+								pageBean.setPage(0);
+								pageBean.setRows(1);
+								mapUser=userService.queryUserRankByPointsPageList(queryRank,pageBean);
+							}else {
+								queryRank.put("rank_time", rank_time);
+								mapRank=userService.queryUserRankByMonthPointsPageList(queryRank,pageBean);
+								//用户信息和历史月份排行
+								queryRank.put("uuid", uuid);
+								PageBean pageBean=new PageBean();
+								pageBean.setPage(0);
+								pageBean.setRows(1);
+								mapUser=userService.queryUserRankByMonthPointsPageList(queryRank,pageBean);
+							}
+						}else {
 							mapRank=userService.queryUserRankByPointsPageList(queryRank,pageBean);
 							//用户信息和当月排行
 							queryRank.put("uuid", uuid);
@@ -113,24 +159,12 @@ public class UserIndexAPIController  extends BaseController{
 							pageBean.setPage(0);
 							pageBean.setRows(1);
 							mapUser=userService.queryUserRankByPointsPageList(queryRank,pageBean);
-						}else {
-							queryRank.put("rank_time", rank_time);
-							mapRank=userService.queryUserRankByMonthPointsPageList(queryRank,pageBean);
-							//用户信息和历史月份排行
-							queryRank.put("uuid", uuid);
-							PageBean pageBean=new PageBean();
-							pageBean.setPage(0);
-							pageBean.setRows(1);
-							mapUser=userService.queryUserRankByMonthPointsPageList(queryRank,pageBean);
 						}
-					}else {
-						mapRank=userService.queryUserRankByPointsPageList(queryRank,pageBean);
-						//用户信息和当月排行
-						queryRank.put("uuid", uuid);
-						PageBean pageBean=new PageBean();
-						pageBean.setPage(0);
-						pageBean.setRows(1);
-						mapUser=userService.queryUserRankByPointsPageList(queryRank,pageBean);
+						if(mapUser.getTotal()>0&&mapUser.getResult()!=null&&mapUser.getResult().size()>0) {
+							map.put("userRank", mapUser.getResult().get(0));
+						}else {
+						    map.put("userRank", 0);
+						}
 					}
 					rankPage.put("total", mapRank.getTotal());
 					rankPage.put("pageSize", mapRank.getPageSize());
@@ -138,11 +172,6 @@ public class UserIndexAPIController  extends BaseController{
 					rankPage.put("pages", mapRank.getPages());
 					rankPage.put("rankList", mapRank);
 					map.put("rankPage", rankPage);
-					if(mapUser.getTotal()>0&&mapUser.getResult()!=null&&mapUser.getResult().size()>0) {
-						map.put("userRank", mapUser.getResult().get(0));
-					}else {
-					    map.put("userRank", 0);
-					}
 					return map;
 				}
 			});

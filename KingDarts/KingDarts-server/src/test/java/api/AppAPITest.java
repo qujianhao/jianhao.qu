@@ -7,15 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wangtiansoft.KingDarts.modules.user.service.UserService;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.wangtiansoft.KingDarts.common.utils.HttpUtil;
 import com.wangtiansoft.KingDarts.common.utils.date.DateUtil;
+
+import javax.annotation.Resource;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,7 +31,14 @@ public class AppAPITest {
 	private static String AUTHORIZATION = "x-access-token";
 	private static String AUTHEQUNO = "equno";
 	private static String accessToken = "061844eb0bb445efbf662ca4b41a7d71";
-	
+	@Resource(name="userService")
+    private UserService userService;
+
+	@Test
+    public void testuser(){
+	    userService.video("0cf7c741faf840f8942977b37237ae67");
+    }
+
 	
 	@Test
 	public void gameres(){

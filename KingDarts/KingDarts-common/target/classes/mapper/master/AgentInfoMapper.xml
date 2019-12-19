@@ -37,7 +37,7 @@
     <result column="version" jdbcType="INTEGER" property="version" />
   </resultMap>
 
-    <select id="queryAgentInfoList" resultType="map">
+    <!-- <select id="queryAgentInfoList" resultType="map">
         SELECT
             id, agno, pagno, agname, captain, card_id, mobile, telno, email, qq, ag_addr, lnglat, latitude, resum, incomes, expends, ag_password, ag_level, add_time, update_time, isvalid, racepht, ag_type, country, province, city, areas, version
         FROM darts_agent_info
@@ -49,6 +49,27 @@
                 AND agname like concat('%', #{agname}, '%')
             </if>
             AND isvalid = 1
+        ORDER BY id DESC
+    </select> -->
+    
+    <select id="queryAgentInfoList" resultType="map">
+        SELECT
+            a.id id, a.agno agno, a.pagno pagno, a.agname agname, a.captain captain, a.card_id card_id, a.mobile mobile, a.telno telno,
+		a.email email, a.qq qq,a.ag_addr ag_addr, a.lnglat lnglat, a.latitude latitude, a.resum resum, a.incomes incomes, a.expends expends,
+		a.ag_password ag_password, a.ag_level ag_level, a.add_time add_time, a.update_time update_time,
+		a.isvalid isvalid, a.racepht racepht, a.ag_type ag_type, a.country country, a.province province, a.city city, a.areas areas, a.version version
+        FROM darts_agent_info a,darts_club_info cc
+        WHERE a.agno = cc.agno
+        	<if test="agno != null and agno != ''">
+                AND a.agno like concat('%', #{agno}, '%')
+            </if>
+            <if test="agname != null and agname != ''">
+                AND a.agname like concat('%', #{agname}, '%')
+            </if>
+			<if test="cname!=null and cname !=''">
+				AND cc.cname LIKE concat('%',#{cname},'%')
+			</if>
+            AND a.isvalid = 1 group by agno
         ORDER BY id DESC
     </select>
     

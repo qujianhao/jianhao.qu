@@ -238,7 +238,8 @@ public class EquInfoController extends BaseController {
 	@ResponseBody
 	JQGirdPageResult equStatistics_search(@RequestParam Map<String, Object> paramMap, @ModelAttribute PageBean pageBean) {
 		if(paramMap.get("time_end")!=null&&!"".equals(paramMap.get("time_end").toString())){
-			paramMap.put("time_end",paramMap.get("time_end").toString()+" 23:59:59");
+			// paramMap.put("time_end",paramMap.get("time_end").toString()+" 23:59:59");
+			paramMap.put("time_end",paramMap.get("time_end").toString());
 		}
 		Page<Map> page = equInfoService.queryEquStatistics(paramMap, pageBean);
 		return new JQGirdPageResult(page);

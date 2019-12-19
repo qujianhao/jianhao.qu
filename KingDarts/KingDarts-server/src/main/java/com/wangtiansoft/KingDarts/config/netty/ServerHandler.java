@@ -45,6 +45,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<String>{
 
 	@Override 
 	public void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+		log.info(msg);
 		if(!Constants.message_type_ping.equals(msg)){
 			log.info(msg);
 		}

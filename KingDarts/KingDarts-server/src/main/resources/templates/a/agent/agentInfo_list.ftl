@@ -20,7 +20,10 @@
                             <label for="agname">代理商名称</label>
                             <input type="text" class="form-control" name="agname" id="agname" value="${paramMap.agname}" maxlength="30" placeholder="请输入代理商名称">
                         </div>
-
+						<div class="col-sm-2 form-group">
+                            <label for="cname">俱乐部名称</label>
+                            <input type="text" class="form-control" name="cname" id="cname" value="${paramMap.cname}" maxlength="30" placeholder="请输入俱乐部名称">
+                        </div>
                 </div>
             </div>
             <div class="box-footer">

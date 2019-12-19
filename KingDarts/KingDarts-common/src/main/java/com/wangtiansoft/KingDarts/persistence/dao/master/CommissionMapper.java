@@ -49,4 +49,11 @@ public interface CommissionMapper extends BaseMapper<Commission> {
     //根据用户ID查询最新一条扫码充值记录（取设备编号）
     @Select("select * from darts_commission where user_id=#{user_id} order by pay_time desc limit 1")
     Commission getNewOneCommissionByUserId(String user_id);
+    
+    // 获取俱乐部当日充值金额
+    int getDayRechargeCount(@Param("agno")String agno,@Param("dayTime")String dayTime);
+    
+    // 获取俱乐部当月充值金额
+    int getMonthRechargeCount(@Param("agno")String agno,@Param("monthTime")String monthTime);
+    
 }

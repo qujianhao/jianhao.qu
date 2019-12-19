@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.github.pagehelper.Page;
+import com.taobao.api.internal.toplink.Logger;
 import com.wangtiansoft.KingDarts.common.bean.ApiResult;
 import com.wangtiansoft.KingDarts.common.bean.PageBean;
 import com.wangtiansoft.KingDarts.common.exception.AppRuntimeException;
@@ -63,25 +64,48 @@ public class MedalAPIController  extends BaseController{
 				paramMap.put("is_publish", 1);
 				pageBean.setRows(1);
 	    		String equno = request.getHeader("equno");
-		        Page<Map> page = null ;				
-			    String belongClub=    equInfoService.queryEquclubByEquno(equno);	    
+		        Page<Map> page = null ;
+		        // 查询出机器所属俱乐部的主键ID
+			    String belongClub=    equInfoService.queryEquclubByEquno(equno);
+			    // 查询出机器所属代理商agno
 			    String belongClubCno=    equInfoService.queryEquclubCnoByEquno(equno);
+			    // 根据代理商编码查询出代理商主键ID
 			    String belongAgent=    equInfoService.queryEquAgentByEquno(belongClubCno);
-			    Page<Map> 	pageNow = null ;	    
-			    if(belongClubCno !=null&&!belongClubCno.equals("")) {
-		    	  paramMap.put("belong_agent",belongAgent);
-				 pageNow = equInfoService.queryAdvertInfoPageListByagentId(paramMap, pageBean);
-				 if(pageNow.getTotal()==0) {
-				     paramMap.put("belong_club",belongClub);
-					   	pageNow = equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
-					   	
-				 }			
+			    Page<Map> 	pageNow = null ;
+			    
+			    // 有俱乐部广告先展示俱乐部广告,俱乐部没广告再展示代理商广告
+			    	System.out.println("belongClub="+belongClub+",belongClubCno="+belongClubCno+",belongAgent="+belongAgent);
+			    	if (belongClub != null && !belongClub.equals("")) {
+						paramMap.put("belong_club", belongClub);
+						pageNow = equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
+						System.out.println("club广告信息=================="+pageNow.toString()+",pageNowSize="+pageNow.size());
+						if (pageNow.size()==0) {
+							paramMap.put("belong_agent", belongAgent);
+							pageNow = equInfoService.queryAdvertInfoPageListByagentId(paramMap, pageBean);
+						}
+					} else {
+						paramMap.put("belong_agent", belongAgent);
+						pageNow = equInfoService.queryAdvertInfoPageListByagentId(paramMap, pageBean);
+					}
+					/*
+					 * if (belongClubCno != null && !belongClubCno.equals("")) {
+					 * paramMap.put("belong_agent", belongAgent); pageNow =
+					 * equInfoService.queryAdvertInfoPageListByagentId(paramMap, pageBean); if
+					 * (pageNow.getTotal() == 0) { paramMap.put("belong_club", belongClub); pageNow
+					 * = equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
+					 * 
+					 * }
+					 * 
+					 * } else { paramMap.put("belong_club", belongClub); pageNow =
+					 * equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);
+					 * 
+					 * }
+					 */
+
+				
 				 
-				}else {
-		        paramMap.put("belong_club",belongClub);
-		       	pageNow = equInfoService.queryAdvertInfoPageListByclubId(paramMap, pageBean);	
-		       	
-				}
+	
+  
 				if(pageNow.size()!=0){
 //				if(page1.size()!=0){
 					page=pageNow;					

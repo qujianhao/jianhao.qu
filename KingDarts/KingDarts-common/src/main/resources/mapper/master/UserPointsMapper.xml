@@ -70,5 +70,45 @@
                 AND rk.user_id = #{uuid}
             </if>
 	</select>
+
+	<select id="selectByclickUserId" resultType="com.wangtiansoft.KingDarts.persistence.entity.UserPoints">
+		select *  from darts_user_points where user_id=#{userId} and click_user_id=#{clickUserId}
+
+
+
+	</select>
+
+
+	<select id="getYunChuanRank" resultType="map">
+		
+		SELECT
+			rk.*
+		FROM
+			(
+				SELECT
+					t.*,@rank := @rank + 1 AS rank
+				FROM
+					(
+						SELECT
+							sum(d.points) AS points,
+							d.user_id,
+							d.game_type,
+							u.nickname,
+							u.headimgurl
+						FROM
+						darts_user_points d
+						JOIN darts_game_order g on g.id = d.order_id AND g.auth_no = #{cno} AND g.end_time &gt; #{end_time}
+						LEFT JOIN wt_user u ON d.user_id = u.uuid
+							GROUP BY
+								d.user_id
+							ORDER BY
+								points DESC
+					) AS t,
+					(SELECT @rank := 0) r
+			) AS rk limit 40
+	
+	</select>
+
+
 	
 </mapper>

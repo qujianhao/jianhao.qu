@@ -50,5 +50,11 @@ public interface CommissionService extends IBaseService<Commission, Integer> {
     Page<Map> queryClubCommissionDetailPageList(Map paramMap, PageBean pageBean);
 
 	List<Map> queryClubCommissionDetailList(List<String> timeList, Map paramMap, int type);
+	
+	// 获取当日充值总金额
+	int getDayRechargeCount(String agno,String dayTime);
+	
+	// 获取当月充值总金额
+	int getMonthRechargeCount(String agno,String monthTime);
 }
 

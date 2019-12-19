@@ -24,9 +24,11 @@ import com.wangtiansoft.KingDarts.modules.user.service.UserService;
 import com.wangtiansoft.KingDarts.persistence.base.BaseExample;
 import com.wangtiansoft.KingDarts.persistence.base.BaseMapper;
 import com.wangtiansoft.KingDarts.persistence.dao.master.CouponMapper;
+import com.wangtiansoft.KingDarts.persistence.dao.master.UseCouponRecordMapper;
 import com.wangtiansoft.KingDarts.persistence.dao.master.UserBalanceMapper;
 import com.wangtiansoft.KingDarts.persistence.dao.master.UserMapper;
 import com.wangtiansoft.KingDarts.persistence.entity.Coupon;
+import com.wangtiansoft.KingDarts.persistence.entity.UseCouponRecord;
 import com.wangtiansoft.KingDarts.persistence.entity.User;
 import com.wangtiansoft.KingDarts.persistence.entity.UserBalance;
 import com.wangtiansoft.KingDarts.results.core.UserResult;
@@ -49,6 +51,9 @@ public class CouponServiceImpl extends BaseService<Coupon, Integer> implements C
 	
 	@Resource
 	private UserService userService;
+	
+	@Autowired
+	private UseCouponRecordMapper useCouponRecordMapper;
 	
 	@Override
 	public BaseMapper getBaseMapper() {
@@ -98,6 +103,28 @@ public class CouponServiceImpl extends BaseService<Coupon, Integer> implements C
     	record.setCoupon_balance_pre(user.getCoupon_balance());
     	userBalanceMapper.insert(record);
 		return null;
+	}
+
+	@Override
+	public Boolean canUseCoupon(String uuid, String couponId) {
+		// 是否使用过该优惠券
+		UseCouponRecord record = useCouponRecordMapper.getByUuidCouponId(uuid, couponId);
+		if (record!=null) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void recordUse(String uuid, String couponId) {
+		UseCouponRecord record = new UseCouponRecord();
+		record.setCouponId(couponId);
+		record.setUuid(uuid);
+		int selective = useCouponRecordMapper.insertSelective(record);
+		if (selective==0) {
+			throw new AppRuntimeException("系统错误，请联系管理员！");
+		}
+		
 	}
 
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.github.pagehelper.Page;
 import com.wangtiansoft.KingDarts.common.bean.ApiResult;
@@ -249,6 +250,67 @@ public class WeixinFinanceController extends BaseController {
 	}
 	
 	
+	
+	/**
+	 * 截止目前当天充值总金额
+	 * @return
+	 */
+	@RequestMapping(value="/dayRechargeCount", method = RequestMethod.POST)
+	public @ResponseBody ApiResult dayRechargeCount(){
+		ApiResult result = this.buildMobileAuthAjaxResponse(new IWebAuthResponseHandler() {
+			
+			@Override
+			public Object execute(String auth_no) throws Exception {
+				SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd");
+				String format = sFormat.format(new Date());
+					Map<String,Object> map = new HashMap<>();
+					int dayRechargeCount = 0;
+					try {
+						dayRechargeCount = commissionService.getDayRechargeCount(auth_no, format);
+						map.put("code", 0);
+						map.put("msg", "success");
+					} catch (Exception e) {
+						map.put("code", 1);
+						map.put("msg", "fail");
+					}
+					map.put("rechargeNum", dayRechargeCount);
+					return map;
+			}
+		});
+		return result;
+	}
+
+	
+	/**
+	 * 截止日前月充值总金额
+	 * @return
+	 */
+	@RequestMapping(value="/monthRechargeCount", method = RequestMethod.POST)
+	public @ResponseBody ApiResult monthRechargeCount(){
+		
+		ApiResult result = this.buildMobileAuthAjaxResponse(new IWebAuthResponseHandler() {
+			@Override
+			public Object execute(String auth_no) throws Exception {
+				SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM");
+				String format = sFormat.format(new Date());
+				Map<String,Object> map = new HashMap<>();
+				int monthRechargeCount = 0;
+				try {
+					map.put("code", 0);
+					monthRechargeCount = commissionService.getMonthRechargeCount(auth_no, format);
+					map.put("msg", "success");
+				} catch (Exception e) {
+					map.put("code", 1);
+					map.put("msg", "fail");
+				}
+				map.put("rechargeNum", monthRechargeCount);
+				return map;
+			}
+		});
+		return result;
+	}
+
+	
 	/**
 	 * 微信提现校验码
 	 */
@@ -270,6 +332,7 @@ public class WeixinFinanceController extends BaseController {
 				Map<String,Object> map = new HashMap<>();
 				map.put("msg", "发送成功");
 				return map;
+				
 			}
 		});
 		return result;

@@ -250,4 +250,16 @@ public class CommissionServiceImpl extends BaseService<Commission, Integer> impl
         PageHelper.startPage(pageBean.getPage(), pageBean.getRows());
 		return (Page<Map>)commissionMapper.queryClubCommissionDetailMonth(paramMap);
 	}
+
+	@Override
+	public int getDayRechargeCount(String agno,String dayTime) {
+		int dayRechargeCount = commissionMapper.getDayRechargeCount(agno, dayTime);
+		return dayRechargeCount;
+	}
+
+	@Override
+	public int getMonthRechargeCount(String agno,String monthTime) {
+		int monthRechargeCount = commissionMapper.getMonthRechargeCount(agno, monthTime);
+		return monthRechargeCount;
+	}
 }

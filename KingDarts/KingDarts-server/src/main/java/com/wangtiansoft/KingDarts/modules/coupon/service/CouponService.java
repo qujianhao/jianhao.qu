@@ -13,4 +13,10 @@ public interface CouponService extends IBaseService<Coupon, Integer> {
 	
 	//使用优惠券
 	Integer useCouponByUser(String couponno,String user_id);
+	
+	// 判断是否可以具备使用优惠券的条件
+	Boolean canUseCoupon(String uuid,String couponId);
+	
+	// 记录使用记录
+	void recordUse(String uuid,String couponId);
 }

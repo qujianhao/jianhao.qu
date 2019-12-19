@@ -1,5 +1,7 @@
 package com.wangtiansoft.KingDarts.modules.game.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.wangtiansoft.KingDarts.common.bean.PageBean;
@@ -11,8 +13,11 @@ import com.wangtiansoft.KingDarts.modules.game.service.GameOrderService;
 import com.wangtiansoft.KingDarts.modules.user.service.UserService;
 import com.wangtiansoft.KingDarts.persistence.base.BaseMapper;
 import com.wangtiansoft.KingDarts.persistence.dao.master.GameOrderMapper;
+import com.wangtiansoft.KingDarts.persistence.dao.master.GamePrizeMapper;
 import com.wangtiansoft.KingDarts.persistence.entity.EquInfo;
 import com.wangtiansoft.KingDarts.persistence.entity.GameOrder;
+import com.wangtiansoft.KingDarts.persistence.entity.GamePrize;
+import com.wangtiansoft.KingDarts.results.core.AwardUserInfo;
 import com.wangtiansoft.KingDarts.results.core.GameOrderResult;
 
 import tk.mybatis.mapper.entity.Example;
@@ -36,7 +41,10 @@ public class GameOrderServiceImpl extends BaseService<GameOrder, Long> implement
     private GameOrderMapper gameOrderMapper;
     @Autowired
     private UserService userService;
-
+    
+    @Autowired
+    private GamePrizeMapper gamePrizeMapper;
+    
     @Override
     public BaseMapper getBaseMapper() {
         return gameOrderMapper;
@@ -115,4 +123,43 @@ public class GameOrderServiceImpl extends BaseService<GameOrder, Long> implement
     	
     	userService.balanceChange(userId, cost, "取消网络游戏",orderId);
     }
+
+	@Override
+	public JSONObject getAwardUserInfo(Map paraMap) {
+		
+		// 根据获奖信息ID 查詢获奖条件
+		JSONObject resultJSon = new JSONObject();
+		JSONArray array = new JSONArray();
+		int id = (int) paraMap.get("id");
+		GamePrize gamePrize = gamePrizeMapper.findById(id);
+		String cond = gamePrize.getCond();
+		String[] split = cond.split("-");
+		String smallStr = split[0];
+		String bigStr = split[1];
+		// 最低分
+		int small = Integer.parseInt(smallStr);
+		// 最高分
+		int big = Integer.parseInt(bigStr);
+		paraMap.put("small", small-1);
+		paraMap.put("big", big+1);
+		// 获取获奖人信息
+		List<AwardUserInfo> list = gameOrderMapper.getAwardUserInfo(paraMap);
+		// 获取获奖总人数
+		int totalNum = gameOrderMapper.getAwardNum(paraMap);
+		
+		if (list.size()>0) {
+			for (AwardUserInfo awardUserInfo : list) {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("uuid", awardUserInfo.getUuid());
+				jsonObject.put("username", awardUserInfo.getUsername());
+				jsonObject.put("headimgurl", awardUserInfo.getHeadimgurl());
+				jsonObject.put("player_score", awardUserInfo.getPlayer_score());
+				jsonObject.put("create_time", awardUserInfo.getCreate_time());
+				array.add(jsonObject);
+			}
+		}
+		resultJSon.put("num", totalNum);
+		resultJSon.put("userInfoArray", array);
+		return resultJSon;
+	}
 }

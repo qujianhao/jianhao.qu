@@ -10,7 +10,6 @@ import java.util.Date;
  * Created by wt-templete-helper on unknow.
  */
 public class AccountResult extends BaseResult implements Serializable{
-
     private Integer id;   //  主键ID
     private String username;   //  账号名称
     private String realname;   //  账号真名

@@ -52,8 +52,17 @@ public class UserPoints extends BaseEntity {
      * 描述
      */
     private String remark;
-    
-    
+
+    //点击用户id
+    private String click_user_id;
+
+    public String getClick_user_id() {
+        return click_user_id;
+    }
+
+    public void setClick_user_id(String click_user_id) {
+        this.click_user_id = click_user_id;
+    }
 
     public Integer getPoints_type() {
 		return points_type;

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.Page;
 import com.wangtiansoft.KingDarts.common.bean.JQGirdPageResult;
 import com.wangtiansoft.KingDarts.common.bean.PageBean;
@@ -57,4 +59,6 @@ public class UserPointsController extends BaseController {
 		}
         return new JQGirdPageResult(mapRank);
     }
+    
+    
 }

@@ -20,4 +20,10 @@ public interface UserMapper extends BaseMapper<User> {
     
     
     int consumeRechargeaddfive(Map paramMap);
+
+    void updatePointByuuid(Map map);
+
+    User selectByVideoTime(String userId);
+
+    void updatePointByuuidandVideoTime(Map map);
 }

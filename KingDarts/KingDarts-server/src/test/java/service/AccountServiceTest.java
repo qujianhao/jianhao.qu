@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wangtiansoft.KingDarts.modules.user.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,15 @@ public class AccountServiceTest {
 	private AccountMapper accountMapper;
 	@Autowired
 	private SigninReMapper signinMapper;
+
+	@Autowired
+	 private UserService userService;
+
+	@Test
+	public void testuser(){
+		userService.video("0cf7c741faf840f8942977b37237ae67");
+	}
+
 
 	@Test
 	public void getAccount(){

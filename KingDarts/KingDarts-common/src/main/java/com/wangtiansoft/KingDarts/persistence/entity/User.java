@@ -143,8 +143,18 @@ public class User extends BaseEntity {
      * 版本，用于乐观锁
      */
     private Integer version;
-    
-    
+
+    //视频上一次时间
+
+    private Date video_time;
+
+    public Date getVideo_time() {
+        return video_time;
+    }
+
+    public void setVideo_time(Date video_time) {
+        this.video_time = video_time;
+    }
 
     public BigDecimal getCoupon_balance() {
 		return coupon_balance;

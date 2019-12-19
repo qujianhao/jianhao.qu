@@ -49,6 +49,7 @@ public class GameOrderController extends BaseController {
 	public
 	@ResponseBody
 	JQGirdPageResult gameOrderNum_search(@RequestParam Map<String, Object> paramMap, @ModelAttribute PageBean pageBean) {
+		System.out.println("游戏数据统计参数"+paramMap.toString());
 		Page<Map> page = gameOrderService.queryGameCountList(paramMap, pageBean);
 		return new JQGirdPageResult(page);
 	}

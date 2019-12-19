@@ -37,7 +37,7 @@ public class CouponController extends BaseController {
 	
 	@Resource
 	private CouponService couponService;
-
+	
 	@RequestMapping("/coupon_list")
     public String coupon_list(@RequestParam Map<String, Object> paramMap) {
         request.setAttribute("paramMap", paramMap);
@@ -71,7 +71,8 @@ public class CouponController extends BaseController {
     public
     @ResponseBody
     ApiResult coupon_save(@ModelAttribute("coupon") Coupon coupon) {
-    	coupon.setCouponno(RandomStringUtils.randomAlphanumeric(32));
+    	coupon.setCouponno(RandomStringUtils.random(10, false, true));
+    	// coupon.setCouponno(RandomStringUtils.randomAlphanumeric(32));
     	coupon.setCoupon_status(0);
     	coupon.setIsvalid(1);
     	coupon.setCreate_time(new Date());

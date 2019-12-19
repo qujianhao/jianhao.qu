@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.wangtiansoft.KingDarts.persistence.dao.master.NineGameResultMapper">
+	<resultMap id="BaseResultMap"
+		type="com.wangtiansoft.KingDarts.results.core.NineGameResult">
+		<!-- <id column="id" jdbcType="BIGINT" property="id" /> -->
+		<!-- <result column="order_no" jdbcType="VARCHAR" property="order_no" /> -->
+		<!-- <result column="player_score" jdbcType="INTEGER" property="player_score" 
+			/> -->
+		<!-- <result column="player_order" jdbcType="INTEGER" property="player_order" 
+			/> -->
+		<!-- <result column="player_orderRate" jdbcType="VARCHAR" property="player_orderRate" 
+			/> -->
+		<!-- <result column="username" jdbcType="VARCHAR" property="username" /> -->
+		<!-- <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" 
+			/> -->
+
+
+	</resultMap>
+
+	<select id="getScoretotalqq"
+		resultType="com.wangtiansoft.KingDarts.results.core.NineGameResult">
+		SELECT a.player_score,c.headimgurl , c.username
+		FROM darts_game_res_player a
+		left join darts_game_order b on a.order_no=b.order_no
+		left join wt_user c on b.user_id=c.uuid
+		<where>
+			b.game_type='s010'
+		</where>
+		ORDER BY a.player_score DESC limit 10
+	</select>
+
+
+	<!-- 通过ID获取排行名次 -->
+	<select id="getRank" resultType="int">
+		select count(1)+1 rank from
+		(SELECT a.player_score playerscore,c.headimgurl , c.username
+		FROM darts_game_res_player a
+		left join darts_game_order b on a.order_no=b.order_no
+		left join wt_user c on b.user_id=c.uuid
+		where b.game_type='s010'
+		<if test="createTime != null and createTime != ''">
+		and a.create_time like concat('%',#{createTime},'%')
+		</if>
+		ORDER BY a.player_score DESC) g
+		WHERE g.playerscore> (select f.playerScore
+		from (SELECT a.player_score playerScore
+		FROM darts_game_res_player a
+		left join darts_game_order b on a.order_no=b.order_no
+		left join wt_user c on b.user_id=c.uuid
+		where b.game_type='s010' AND c.uuid = #{uuid} 
+		
+		ORDER BY a.player_score DESC
+		limit 1) f)
+	</select>
+
+	<!-- 获取总人数 -->
+	<select id="getTotalNum" resultType="int">
+		select count(*) from (SELECT a.player_score,c.headimgurl , c.username
+		FROM darts_game_res_player a
+		left join darts_game_order b on a.order_no=b.order_no
+		left join wt_user c on b.user_id=c.uuid
+		where b.game_type='s010' ORDER BY a.player_score DESC) e
+	</select>
+
+	<!-- 获取自己的最高分 -->
+	<select id="getSelfHighScore" resultType="int">
+		SELECT a.player_score
+		FROM darts_game_res_player a
+		left join darts_game_order b on a.order_no=b.order_no
+		left join wt_user c on b.user_id=c.uuid
+		where b.game_type='s010' and b.user_id = #{uuid}
+		<if test="createTime != null and createTime != ''">
+		and a.create_time like concat('%',#{createTime},'%')
+		</if>
+		ORDER BY a.player_score DESC limit 1
+	</select>
+
+	<select id="getRankListByMonth" resultType="map">
+		select g.* from
+		(SELECT a.player_score points,c.headimgurl , c.username nickname, c.uuid user_id
+		FROM darts_game_res_player a
+		left join darts_game_order b on a.order_no=b.order_no
+		left join wt_user c on b.user_id=c.uuid
+		where b.game_type='s010'
+		and a.create_time like concat('%',#{createTime},'%')
+		ORDER BY a.player_score DESC
+		limit 500) g GROUP BY g.user_id ORDER BY g.points desc
+	</select>
+
+
+
+
+</mapper>

@@ -1,9 +1,12 @@
 package com.wangtiansoft.KingDarts.modules.game.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.wangtiansoft.KingDarts.common.bean.PageBean;
 import com.wangtiansoft.KingDarts.core.support.common.IBaseService;
 import com.wangtiansoft.KingDarts.persistence.entity.GameOrder;
+import com.wangtiansoft.KingDarts.results.core.AwardUserInfo;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -62,6 +65,11 @@ public interface GameOrderService extends IBaseService<GameOrder, Long> {
 	 */
 	Page<Map> queryGameTypeCountList(Map paramMap, PageBean pageBean);
 
-	
+	/**
+	 * 获取九镖获奖人信息
+	 * @param paraMap
+	 * @return
+	 */
+	JSONObject getAwardUserInfo(Map paraMap);
 }
 

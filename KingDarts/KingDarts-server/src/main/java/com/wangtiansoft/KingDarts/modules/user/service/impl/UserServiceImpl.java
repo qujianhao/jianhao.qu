@@ -1,5 +1,7 @@
 package com.wangtiansoft.KingDarts.modules.user.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.jfinal.kit.PropKit;
@@ -8,6 +10,7 @@ import com.wangtiansoft.KingDarts.common.exception.AppRuntimeException;
 import com.wangtiansoft.KingDarts.common.utils.BeanUtil;
 import com.wangtiansoft.KingDarts.common.utils.RandomUtil;
 import com.wangtiansoft.KingDarts.common.utils.SQLUtil;
+import com.wangtiansoft.KingDarts.config.lftpay.api.util.StringUtil;
 import com.wangtiansoft.KingDarts.constants.Constants;
 import com.wangtiansoft.KingDarts.modules.equip.service.EquInfoService;
 import com.wangtiansoft.KingDarts.modules.game.service.GameOrderService;
@@ -734,7 +737,7 @@ public class UserServiceImpl extends BaseService<User, Integer> implements UserS
 		
 		
 		int a = b.intValue();
-		int c  = a+5;
+		int c  = a+10;
 		
 		BigDecimal coupon_balance = new BigDecimal(0);
 		int value=c;
@@ -751,22 +754,195 @@ public class UserServiceImpl extends BaseService<User, Integer> implements UserS
 	//	System.out.println(coupon_balance);
 
     }
-    
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+//	@Override
+//	@Transactional
+//	public void transmit(String userId, String newUserId, String token) {
+//    	Map map=new HashMap();
+//    	Map map1=new HashMap();
+//    	map1.put("userId",userId);
+//    	map1.put("clickUserId",newUserId);
+//     	System.out.println("用户ID2"+userId);
+//    	List<UserPoints> list=this.userPointsMapper.selectByclickUserId(map1);
+//        if(list.size()>0){
+//        	return;
+//		}
+//		int points=0;
+//    	if(StringUtil.isNotEmpty(token)){
+//          points=30;
+//		}else {
+//          points=10;
+//		}
+//		UserPoints userPoints = new UserPoints();
+//		userPoints.setLog_time(new Date());
+//		userPoints.setPoints(points);
+//		userPoints.setUser_id(userId);
+//		userPoints.setClick_user_id(newUserId);
+//		if(points==30){
+//			userPoints.setPoints_type(3);
+//			userPoints.setRemark("新用户点击链接");
+//		}else {
+//			userPoints.setPoints_type(4);
+//			userPoints.setRemark("老用户点击链接");
+//		}
+//		userPointsMapper.insert(userPoints);
+//		System.out.println("完成增加"+userId);
+//		map.put("uuid",userId);
+//		map.put("points",points);
+//		this.userMapper.updatePointByuuid(map);
+//		map.put("uuid",newUserId);
+//		this.userMapper.updatePointByuuid(map);
+//	 	System.out.println("完成保存"+userId);
+//	}
+//
+	@Override
+	public void video(String userId) {
+		System.out.println("进入VIDEO"+userId);
+		
+		User user=this.userMapper.selectByVideoTime(userId);
+		if(!isNotBlank(user)){
+			return;
+		}
+		Date date=new Date();
+		//SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd:HH:ss:mm");
+		if(!isNotBlank(user.getVideo_time())){
+			user.setVideo_time(date);
+		}
+		long now=date.getTime();
+		long end =user.getVideo_time().getTime();
+		long result=1000*60*5;
+		System.out.println("是否进入VIDEO"+userId);
+//		if((now-end)>result||(now-end)==0||!isNotBlank(end)){
+			Map map=new HashMap();
+			map.put("uuid",userId);
+			map.put("points",10);
+			map.put("videoTime",date);
+			
+			BigDecimal b=new BigDecimal(user.getCoupon_balance().toString());
+			
+			
+			int a = b.intValue();
+			int c  = a+2;
+			
+//			int c  = a+10;
+//			
+			BigDecimal coupon_balance = new BigDecimal(0);
+			int value=c;
+			coupon_balance=BigDecimal.valueOf((int)value);
+
+			System.out.println(coupon_balance);
+//	    	BigDecimal coupon_balance=new BigDecimal(Integer.toString(Integer.valueOf(user.getCoupon_balance().toString())+5));
+	   
+	    	
+//	    System.out.println(coupon_balance);
+	    	
+	    	map.put("Coupon_balance", coupon_balance);
+	    	userMapper.consumeRechargeaddfive(map) ;
+			this.userMapper.updatePointByuuidandVideoTime(map);
+			System.out.println("进入成功VIDEO"+userId);
+//		}else {
+//			System.out.println("进入失败VIDEO"+userId);
+//			return;
+//		}
+	}
+	public boolean isNotBlank(Object str){
+		if(str==null) {
+			return false;
+		}
+		return true;
+	}
+
+
+	@Override
+	@Transactional
+	public void transmit(String userId, String newUserId, String token) {
+    	Map map=new HashMap();
+    	Map map1=new HashMap();
+    	map1.put("userId",userId);
+    	map1.put("clickUserId",newUserId);
+    	if(userId.equals(newUserId)){
+    		return;
+		}
+    	List<UserPoints> list=this.userPointsMapper.selectByclickUserId(map1);
+        if(list.size()>0){
+        	return;
+		}
+		int points=0;
+    	if(StringUtil.isNotEmpty(token)){
+          points=30;
+		}else {
+          points=10;
+		}
+		UserPoints userPoints = new UserPoints();
+		userPoints.setLog_time(new Date());
+		userPoints.setPoints(points);
+		userPoints.setUser_id(userId);
+		userPoints.setClick_user_id(newUserId);
+		if(points==30){
+			userPoints.setPoints_type(3);
+			userPoints.setRemark("新用户点击链接");
+		}else {
+			userPoints.setPoints_type(4);
+			userPoints.setRemark("老用户点击链接");
+		}
+		userPointsMapper.insert(userPoints);
+		map.put("uuid",userId);
+		map.put("points",points);
+		this.userMapper.updatePointByuuid(map);
+		map.put("uuid",newUserId);
+		this.userMapper.updatePointByuuid(map);
+	}
+
+	@Override
+	public JSONArray getYunChuanRank(String cno, String date) {
+		Map paramMap = new HashMap<>();
+		JSONArray array = new JSONArray();
+		paramMap.put("cno", cno);
+		paramMap.put("end_time",date);
+		List<Map> list = userPointsMapper.getYunChuanRank(paramMap);
+		if (list.size()==0) {
+			return array;
+		}
+		for (Map map : list) {
+			JSONObject object = new JSONObject();
+			object.put("rank", map.get("rank"));
+			object.put("headimgurl", map.get("headimgurl"));
+			object.put("nickname", map.get("nickname"));
+			object.put("points", map.get("points"));
+			array.add(object);
+		}
+		
+		return array;
+	}
+
+//	@Override
+//	public void video(String userId) {
+//		User user=this.userMapper.selectByVideoTime(userId);
+//		if(!isNotBlank(user)){
+//			return;
+//		}
+//		Date date=new Date();
+//		//SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd:HH:ss:mm");
+//		if(!isNotBlank(user.getVideo_time())){
+//			user.setVideo_time(date);
+//		}
+//		long now=date.getTime();
+//		long end =user.getVideo_time().getTime();
+//		long result=1000*60*5;
+//		if((now-end)>result||(now-end)==0){
+//			Map map=new HashMap();
+//			map.put("uuid",userId);
+//			map.put("videoTime",date);
+//			this.userMapper.updatePointByuuidandVideoTime(map);
+//		}else {
+//			return;
+//		}
+//	}
+//	public boolean isNotBlank(Object str){
+//		if(str==null) {
+//			return false;
+//		}
+//		return true;
+//	} 
+//    
 }

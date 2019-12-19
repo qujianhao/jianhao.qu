@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.Page;
 import com.wangtiansoft.KingDarts.common.bean.PageBean;
 import com.wangtiansoft.KingDarts.core.support.common.IBaseService;
@@ -171,7 +172,11 @@ public interface UserService extends IBaseService<User, Integer> {
 	void balanceChangedd(String userId);
 
 
+	void transmit(String userId, String newUserId, String token);
 
+	void video(String userId);
 	
+	JSONArray getYunChuanRank(String cno,String date);
+
 }
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangtiansoft.KingDarts.persistence.dao.master.GamePrizeMapper">
+  <resultMap id="BaseResultMap" type="com.wangtiansoft.KingDarts.persistence.entity.GamePrize">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="prize" jdbcType="VARCHAR" property="prize" />
+    <result column="gift" jdbcType="VARCHAR" property="gift" />
+    <result column="cond" jdbcType="VARCHAR" property="cond" />
+    <result column="isvalid" jdbcType="INTEGER" property="isvalid" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+  </resultMap>
+
+   <select id="listValidPrize" resultType="com.wangtiansoft.KingDarts.persistence.entity.GamePrize">
+   		select id,prize,gift,cond,isvalid,add_time
+   		from darts_game_prize
+   		where isvalid = 1
+   </select>
+
+   <select id="findById" resultType="com.wangtiansoft.KingDarts.persistence.entity.GamePrize">
+   		select * from darts_game_prize where id = #{id}
+   </select>
+   
+</mapper>

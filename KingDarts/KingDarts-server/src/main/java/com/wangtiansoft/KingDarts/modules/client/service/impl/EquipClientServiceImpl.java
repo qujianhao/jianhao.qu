@@ -50,6 +50,10 @@ public class EquipClientServiceImpl extends BaseService implements EquipClientSe
 				//校验参数,判断设备是否已经登录
 				String equno = params.get("equno")!=null?params.get("equno").toString():"";
 				
+				System.out.println("登录equno"+equno);
+				
+				
+				
 				if(!channelService.getHasInit()){
 					throw new AppRuntimeException(Constants.kCode_NotInit, "服务器初始化中");
 				}
@@ -80,7 +84,10 @@ public class EquipClientServiceImpl extends BaseService implements EquipClientSe
 
 				//校验成功
 				Map<String,String> map = new HashMap<>();
+				System.out.println("来登录111");
+				
 				if(!channel.isShutdown()){
+					System.out.println("来登录222");
 					channelService.addGatewayChannel(id, channel);
 					OnlineChannel onlineChannel = new OnlineChannel();
 					onlineChannel.setClientId(id);
@@ -150,7 +157,7 @@ public class EquipClientServiceImpl extends BaseService implements EquipClientSe
 				Object obj = redisTemplate.opsForHash().get(Constants.online_channel, equno);
 				if(obj==null){
 					
-					throw new AppRuntimeException("设备登录状态错误");
+					throw new AppRuntimeException("设备登录状态错误6666");
 				}
 				OnlineChannel onlineChannel = (OnlineChannel)obj;
 				onlineChannel.setHeartTime(new Date());

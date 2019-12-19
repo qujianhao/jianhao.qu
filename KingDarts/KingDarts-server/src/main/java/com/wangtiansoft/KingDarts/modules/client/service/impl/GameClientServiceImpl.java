@@ -311,7 +311,7 @@ public class GameClientServiceImpl extends BaseService implements GameClientServ
 				if(StringUtils.isEmpty(cid)){
 					Object obj = redisTemplate.opsForHash().get(Constants.online_channel, equno);
 					if(obj==null){
-						throw new AppRuntimeException("设备登录状态错误");
+						throw new AppRuntimeException("设备登录状态错误777");
 					}
 					OnlineChannel onlineChannel = (OnlineChannel)obj;
 					cid = onlineChannel.getClientId();
@@ -425,7 +425,7 @@ public class GameClientServiceImpl extends BaseService implements GameClientServ
 	public SocketChannel getSocketChannel(String equno){
 		Object obj = redisTemplate.opsForHash().get(Constants.online_channel, equno);
 		if(obj==null){
-			throw new AppRuntimeException("设备登录状态错误");
+			throw new AppRuntimeException("设备登录状态错误888");
 		}
 		OnlineChannel onlineChannel = (OnlineChannel)obj;
 		String cid = onlineChannel.getClientId();

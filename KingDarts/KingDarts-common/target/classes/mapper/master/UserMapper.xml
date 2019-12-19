@@ -29,6 +29,7 @@
     <result column="unionid" jdbcType="VARCHAR" property="unionid" />
     <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
     <result column="version" jdbcType="INTEGER" property="version" />
+	<result column="video_time" jdbcType="TIMESTAMP"  property="video_time"/>
   </resultMap>
 
     <select id="queryUserList" resultType="map">
@@ -139,5 +140,84 @@
     		wcopenid = #{openid} 
     	</where>
     </update>
+
+
+
+
+
+    
+    <update id="consumeRechargeaddfive">
+    	update wt_user 
+    	<set>
+
+     coupon_balance =  #{Coupon_balance}
+
+    	</set> 
+    	<where> 
+    		uuid = #{uuid} 
+
+    	</where>
+    </update>
+
+<!-- <update id="updatePointByuuid"> -->
+<!-- 	update wt_user -->
+<!-- 	<set> -->
+<!-- 		give_balance=give_balance+#{points} -->
+
+<!-- 	</set> -->
+<!-- 	<where> -->
+<!-- 		uuid = #{uuid} -->
+<!-- 	</where> -->
+<!-- </update> -->
+
+
+<!-- 	<update id="updatePointByuuidandVideoTime" > -->
+<!-- 		update wt_user -->
+<!-- 		<set> -->
+<!-- 			give_balance=give_balance+10, -->
+<!-- 			video_time=#{videoTime} -->
+
+<!-- 		</set> -->
+<!--        where uuid=#{uuid} -->
+<!-- 	</update> -->
+
+
+
+
+
+<update id="updatePointByuuid">
+	update wt_user
+	<set>
+		give_balance=give_balance+#{points}
+
+	</set>
+	<where>
+		uuid = #{uuid}
+	</where>
+</update>
+	<update id="updatePointByuuidandVideoTime">
+		update wt_user
+		<set>
+			     coupon_balance =  #{Coupon_balance},
+			video_time=#{videoTime}
+
+		</set>
+    	<where> 
+    		uuid = #{uuid} 
+
+    	</where>
+	</update>
+
+
+
+
+<select id="selectByVideoTime"  resultMap="BaseResultMap">
+	select * from wt_user
+	where uuid=#{userId}
+</select>
+
+
+
+
 
 </mapper>
